@@ -34,7 +34,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${jost.variable} ${marcellus.variable}`}>
+      <body className={`${jost.variable} ${marcellus.variable}`} suppressHydrationWarning>
         <BootstrapClient />
         <AOSClient />
         <SvgIcons />

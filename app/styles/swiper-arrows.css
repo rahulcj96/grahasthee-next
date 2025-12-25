@@ -1,0 +1,45 @@
+/* Swiper Arrow Controls */
+.icon-arrow {
+    position: absolute;
+    top: 50%;
+    font-size: 2em;
+    color: var(--dark-color);
+    z-index: 8;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.3s ease-out;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    background: transparent;
+}
+
+.icon-arrow:hover {
+    opacity: 1;
+}
+
+.icon-arrow.icon-arrow-left {
+    left: -75px;
+    transform: translateY(-50%);
+}
+
+.icon-arrow.icon-arrow-right {
+    right: -75px;
+    transform: translateY(-50%);
+}
+
+.icon-arrow svg {
+    fill: currentColor;
+}
+
+@media (max-width: 991px) {
+
+    .icon-arrow.icon-arrow-left,
+    .icon-arrow.icon-arrow-right {
+        display: none;
+    }
+}
