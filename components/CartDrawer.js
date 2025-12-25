@@ -10,7 +10,7 @@ export default function CartDrawer() {
     const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     const handleCheckout = () => {
-        const phoneNumber = "919000000000"; // Placeholder: User should replace with their actual number
+        const phoneNumber = "918891888448"; // Updated to correct customer care number
 
         let message = `*New Order from Grahasthee*%0A%0A`;
 

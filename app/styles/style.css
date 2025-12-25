@@ -1728,32 +1728,65 @@ a.btn-link.text-light:after {
 
 /* Cart Drawer & Wishlist Styles */
 .cart-item-image {
-    transition: transform 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .cart-item:hover .cart-item-image {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .quantity-toggle {
-    background: #f8f9fa;
+  background: #f8f9fa;
 }
 
 .quantity-toggle button:hover {
-    background: #e9ecef;
+  background: #e9ecef;
 }
 
 .cart-footer {
-    background: #fff;
+  background: #fff;
 }
 
 /* Ensure sticky top header has higher z-index than images */
 .sticky-top {
-    z-index: 1030;
+  z-index: 1020;
+}
+
+/* Offcanvas Fixes for Mobile */
+.offcanvas {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.offcanvas-backdrop.show {
+  opacity: 0.5 !important;
+}
+
+.offcanvas-body {
+  background-color: #ffffff !important;
+}
+
+/* Related Products Styling */
+.related-products h3 {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .related-products h3 {
+    font-size: 1.1rem;
+  }
+
+  .related-products .view-all {
+    font-size: 0.7rem;
+  }
+}
+
+.sticky-top {
+  z-index: 1030;
 }
 
 .navbar {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
 }
-

@@ -68,7 +68,7 @@ export default async function ProductDetailPage({ params }) {
             <main>
                 <section className="product-details py-5">
                     <div className="container">
-                        <nav aria-label="breadcrumb" className="mb-4">
+                        <nav aria-label="breadcrumb" className="mb-4 d-none d-md-block">
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item"><Link href="/">Home</Link></li>
                                 <li className="breadcrumb-item"><Link href="/shop">Shop</Link></li>

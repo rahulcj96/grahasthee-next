@@ -36,16 +36,12 @@ export default function ProductCard({ product }) {
                     <div className="image-holder" style={{ width: '100%', height: '350px', overflow: 'hidden' }}>
                         <Image
                             src={image_url || '/placeholder.webp'}
-                            alt={alt_text || title}
+                            alt={title}
                             width={400}
                             height={350}
-                            style={{
-                                width: '100%',
-                                height: '350px',
-                                objectFit: 'cover',
-                                display: 'block'
-                            }}
-                            className="img-fluid"
+                            className="w-100 h-100"
+                            style={{ objectFit: 'cover' }}
+                            priority
                         />
                     </div>
                 </Link>
