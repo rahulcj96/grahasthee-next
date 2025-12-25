@@ -1,10 +1,48 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Hero() {
+    const [ categories, setCategories ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
+
+    useEffect(() => {
+        async function fetchCategories() {
+            const { data, error } = await supabase
+                .from('categories')
+                .select('*');
+
+            if (error) {
+                console.error('Error fetching categories:', error);
+            } else {
+                const transformedData = data.map(cat => ({
+                    ...cat,
+                    image_url: cat.image_url.startsWith('https://grahasthee.com/assets/')
+                        ? cat.image_url.replace('https://grahasthee.com/assets/', '/')
+                        : cat.image_url
+                }));
+                setCategories(transformedData);
+            }
+            setLoading(false);
+        }
+
+        fetchCategories();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container py-5 text-center">
+                <div className="spinner-border text-dark" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <section id="billboard" className="bg-light py-5">
             <div className="container">
@@ -42,156 +80,33 @@ export default function Hero() {
                             768: { slidesPerView: 2 },
                         }}
                     >
-                        <SwiperSlide>
-                            <div className="banner-item image-zoom-effect">
-                                <div className="image-holder">
-                                    <Image
-                                        src="/images/collections/pillow-cover.webp"
-                                        alt="product"
-                                        width={387}
-                                        height={580}
-                                        className="img-fluid"
-                                    />
+                        {categories.map((category) => (
+                            <SwiperSlide key={category.id}>
+                                <div className="banner-item image-zoom-effect">
+                                    <div className="image-holder">
+                                        <Image
+                                            src={category.image_url}
+                                            alt={category.title}
+                                            width={387}
+                                            height={580}
+                                            className="img-fluid"
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                    <div className="banner-content py-4">
+                                        <h5 className="element-title text-uppercase">
+                                            <Link href={`/shop?category=${category.slug}`} className="item-anchor">
+                                                {category.title}
+                                            </Link>
+                                        </h5>
+                                        <p>
+                                            <b>{category.tagline}</b> <br />
+                                            {category.description}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="banner-content py-4">
-                                    <h5 className="element-title text-uppercase">
-                                        <Link href="#" className="item-anchor">
-                                            Cotton Pillow Covers
-                                        </Link>
-                                    </h5>
-                                    <p>
-                                        <b>Pure cotton comfort.</b> <br />
-                                        Refresh your bedroom with our range of soft, durable, and
-                                        stylish pillow covers. Sleep beautifully!
-                                    </p>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="banner-item image-zoom-effect">
-                                <div className="image-holder">
-                                    <Image
-                                        src="/images/collections/handbags.webp"
-                                        alt="product"
-                                        width={387}
-                                        height={580}
-                                        className="img-fluid"
-                                    />
-                                </div>
-                                <div className="banner-content py-4">
-                                    <h5 className="element-title text-uppercase">
-                                        <Link href="#" className="item-anchor">
-                                            Handbags
-                                        </Link>
-                                    </h5>
-                                    <p>
-                                        <b>The perfect accessory.</b> <br />
-                                        Discover a collection of chic and functional handbags
-                                        crafted for your daily needs and every occasion.
-                                    </p>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="banner-item image-zoom-effect">
-                                <div className="image-holder">
-                                    <Image
-                                        src="/images/collections/bath-towels.webp"
-                                        alt="product"
-                                        width={387}
-                                        height={580}
-                                        className="img-fluid"
-                                    />
-                                </div>
-                                <div className="banner-content py-4">
-                                    <h5 className="element-title text-uppercase">
-                                        <Link href="#" className="item-anchor">
-                                            Luxe Linen Bath Towels
-                                        </Link>
-                                    </h5>
-                                    <p>
-                                        <b>Indulge in luxury.</b> <br />
-                                        Wrap yourself in the finest linen and cotton blends. Highly
-                                        absorbent, ultra-soft, and quick-drying.
-                                    </p>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="banner-item image-zoom-effect">
-                                <div className="image-holder">
-                                    <Image
-                                        src="/images/collections/cozy-corner.webp"
-                                        alt="product"
-                                        width={387}
-                                        height={580}
-                                        className="img-fluid"
-                                    />
-                                </div>
-                                <div className="banner-content py-4">
-                                    <h5 className="element-title text-uppercase">
-                                        <Link href="#" className="item-anchor">
-                                            Cozy Corner
-                                        </Link>
-                                    </h5>
-                                    <p>
-                                        <b>Design your haven.</b> <br />
-                                        Everything you need to create a comfortable, warm, and
-                                        inviting space right in your own home.
-                                    </p>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="banner-item image-zoom-effect">
-                                <div className="image-holder">
-                                    <Image
-                                        src="/images/collections/pillow-cover.webp"
-                                        alt="product"
-                                        width={387}
-                                        height={580}
-                                        className="img-fluid"
-                                    />
-                                </div>
-                                <div className="banner-content py-4">
-                                    <h5 className="element-title text-uppercase">
-                                        <Link href="#" className="item-anchor">
-                                            Cotton Pillow Covers
-                                        </Link>
-                                    </h5>
-                                    <p>
-                                        <b>Pure cotton comfort.</b> <br />
-                                        Refresh your bedroom with our range of soft, durable, and
-                                        stylish pillow covers. Sleep beautifully!
-                                    </p>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="banner-item image-zoom-effect">
-                                <div className="image-holder">
-                                    <Image
-                                        src="/images/collections/handbags.webp"
-                                        alt="product"
-                                        width={387}
-                                        height={580}
-                                        className="img-fluid"
-                                    />
-                                </div>
-                                <div className="banner-content py-4">
-                                    <h5 className="element-title text-uppercase">
-                                        <Link href="#" className="item-anchor">
-                                            Handbags
-                                        </Link>
-                                    </h5>
-                                    <p>
-                                        <b>The perfect accessory.</b> <br />
-                                        Discover a collection of chic and functional handbags
-                                        crafted for your daily needs and every occasion.
-                                    </p>
-                                </div>
-                            </div>
-                        </SwiperSlide>
+                            </SwiperSlide>
+                        ))}
                         <div className="swiper-pagination"></div>
                     </Swiper>
                 </div>

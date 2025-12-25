@@ -1,10 +1,65 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import Link from "next/link";
-import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient";
+import ProductCard from "@/components/ProductCard";
 
 export default function BestSellers() {
+    const [ products, setProducts ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
+
+    useEffect(() => {
+        async function fetchBestSellers() {
+            const { data, error } = await supabase
+                .from('products')
+                .select(`
+                    *,
+                    product_images!inner (
+                        image_url,
+                        alt_text,
+                        is_primary
+                    )
+                `)
+                .eq('is_best_seller', true)
+                .eq('product_images.is_primary', true)
+                .limit(10);
+
+            if (error) {
+                console.error('Error fetching best sellers:', error);
+            } else {
+                const transformedData = data.map(product => {
+                    let imageUrl = product.product_images?.[ 0 ]?.image_url;
+                    if (imageUrl && imageUrl.startsWith('https://grahasthee.com/assets/')) {
+                        imageUrl = imageUrl.replace('https://grahasthee.com/assets/', '/');
+                    }
+                    return {
+                        ...product,
+                        image_url: imageUrl,
+                        alt_text: product.product_images?.[ 0 ]?.alt_text
+                    };
+                });
+                setProducts(transformedData);
+            }
+            setLoading(false);
+        }
+
+        fetchBestSellers();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container py-5 text-center">
+                <div className="spinner-border text-dark" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (products.length === 0) return null;
+
     return (
         <section
             id="best-sellers"
@@ -34,138 +89,11 @@ export default function BestSellers() {
                         className="product-swiper open-up"
                         data-aos="zoom-out"
                     >
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/best-sellers/bath-towel-1.webp"
-                                            alt="categories"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">Solid Mint Green Towel</Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/best-sellers/mat.webp"
-                                            alt="product"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">Grey Scalloped Bath Mat</Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/best-sellers/bath-towel-2.webp"
-                                            alt="categories"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Lightweight Turkish Bath Towel
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/best-sellers/basket.webp"
-                                            alt="categories"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Woven Storage Basket Set
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/best-sellers/bath-towel-3.webp"
-                                            alt="categories"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Artisan Woven Throw Blanket
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/best-sellers/rug.webp"
-                                            alt="categories"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">Hand-Knotted Accent Rug</Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
+                        {products.map((product) => (
+                            <SwiperSlide key={product.id}>
+                                <ProductCard product={product} />
+                            </SwiperSlide>
+                        ))}
                     </Swiper>
                     <div className="icon-arrow icon-arrow-left">
                         <svg width="50" height="50" viewBox="0 0 24 24">

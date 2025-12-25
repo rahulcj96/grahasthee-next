@@ -1755,12 +1755,18 @@ a.btn-link.text-light:after {
 /* Offcanvas Fixes for Mobile */
 .offcanvas {
   background-color: #ffffff !important;
-  opacity: 1 !important;
-  visibility: visible !important;
 }
 
-.offcanvas-backdrop.show {
-  opacity: 0.5 !important;
+.offcanvas-body .nav-link {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.offcanvas-body .nav-link svg {
+  color: #333;
 }
 
 .offcanvas-body {

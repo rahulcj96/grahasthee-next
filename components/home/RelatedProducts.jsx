@@ -1,10 +1,64 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import Link from "next/link";
-import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient";
+import ProductCard from "@/components/ProductCard";
 
 export default function RelatedProducts() {
+    const [ products, setProducts ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
+
+    useEffect(() => {
+        async function fetchProducts() {
+            const { data, error } = await supabase
+                .from('products')
+                .select(`
+                    *,
+                    product_images!inner (
+                        image_url,
+                        alt_text,
+                        is_primary
+                    )
+                `)
+                .eq('product_images.is_primary', true)
+                .limit(8);
+
+            if (error) {
+                console.error('Error fetching products:', error);
+            } else {
+                const transformedData = data.map(product => {
+                    let imageUrl = product.product_images?.[ 0 ]?.image_url;
+                    if (imageUrl && imageUrl.startsWith('https://grahasthee.com/assets/')) {
+                        imageUrl = imageUrl.replace('https://grahasthee.com/assets/', '/');
+                    }
+                    return {
+                        ...product,
+                        image_url: imageUrl,
+                        alt_text: product.product_images?.[ 0 ]?.alt_text
+                    };
+                });
+                setProducts(transformedData);
+            }
+            setLoading(false);
+        }
+
+        fetchProducts();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container py-5 text-center">
+                <div className="spinner-border text-dark" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (products.length === 0) return null;
+
     return (
         <section
             id="related-products"
@@ -34,121 +88,11 @@ export default function RelatedProducts() {
                         className="product-swiper open-up"
                         data-aos="zoom-out"
                     >
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/related-products/bath-towel-1.webp"
-                                            alt="product"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Honeycomb Weave Kitchen Towel
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/related-products/mat-1.webp"
-                                            alt="product"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Vintage-Inspired Printed Area Rug
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/related-products/tote.webp"
-                                            alt="product"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Braided Cotton Storage Baskets (Set of 3)
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/related-products/bath-towel-2.webp"
-                                            alt="product"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Textured Coral Tea Towel
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <div className="product-item image-zoom-effect link-effect">
-                                <div className="image-holder">
-                                    <Link href="/product-detail">
-                                        <Image
-                                            src="/images/related-products/mat-2.webp"
-                                            alt="product"
-                                            width={300}
-                                            height={300}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
-                                        />
-                                    </Link>
-                                    <div className="product-content">
-                                        <h5 className="text-uppercase fs-5 mt-3">
-                                            <Link href="/product-detail">
-                                                Earthy Floral Accent Mat
-                                            </Link>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
+                        {products.map((product) => (
+                            <SwiperSlide key={product.id}>
+                                <ProductCard product={product} />
+                            </SwiperSlide>
+                        ))}
                     </Swiper>
                     <div className="icon-arrow icon-arrow-left">
                         <svg width="50" height="50" viewBox="0 0 24 24">

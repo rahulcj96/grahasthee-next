@@ -37,10 +37,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${jost.variable} ${marcellus.variable}`} suppressHydrationWarning>
         <BootstrapClient />
-        <AOSClient />
         <SvgIcons />
         <CartDrawer />
         {children}
+        <AOSClient />
       </body>
     </html>
   );

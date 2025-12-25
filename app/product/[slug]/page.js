@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -134,10 +135,19 @@ export default async function ProductDetailPage({ params }) {
                     </div>
                 </section>
 
-                <RelatedProducts
-                    categoryId={product.category_id}
-                    currentProductId={product.id}
-                />
+
+                <Suspense fallback={
+                    <div className="container py-5 text-center">
+                        <div className="spinner-border text-dark" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }>
+                    <RelatedProducts
+                        categoryId={product.category_id}
+                        currentProductId={product.id}
+                    />
+                </Suspense>
             </main>
             <Footer />
         </>

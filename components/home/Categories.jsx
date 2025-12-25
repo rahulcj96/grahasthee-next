@@ -10,7 +10,7 @@ export default function Categories() {
                         <div className="col-md-4">
                             <div className="cat-item image-zoom-effect">
                                 <div className="image-holder">
-                                    <Link href="#">
+                                    <Link href="/shop?category=cotton-pillow-covers">
                                         <Image
                                             src="/images/categories/pillow-covers.webp"
                                             alt="categories"
@@ -27,7 +27,7 @@ export default function Categories() {
                         <div className="col-md-4">
                             <div className="cat-item image-zoom-effect">
                                 <div className="image-holder">
-                                    <Link href="#">
+                                    <Link href="/shop?category=luxe-linen-bath-towels">
                                         <Image
                                             src="/images/categories/bath-towels.webp"
                                             alt="categories"
@@ -44,7 +44,7 @@ export default function Categories() {
                         <div className="col-md-4">
                             <div className="cat-item image-zoom-effect">
                                 <div className="image-holder">
-                                    <Link href="#">
+                                    <Link href="/shop?category=cozy-corners">
                                         <Image
                                             src="/images/categories/cozy-corners.webp"
                                             alt="categories"
