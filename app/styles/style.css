@@ -1677,3 +1677,83 @@ a.btn-link.text-light:after {
     margin-bottom: 1rem;
   }
 }
+
+/* Product Detail Page Styles */
+.breadcrumb-item a {
+  color: #999;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.breadcrumb-item a:hover {
+  color: #333;
+}
+
+.breadcrumb-item.active {
+  color: #333;
+  font-weight: 500;
+}
+
+.thumb-item {
+  transition: all 0.3s ease;
+}
+
+.thumb-item:hover {
+  border-color: #333 !important;
+}
+
+.quantity-selector input::-webkit-outer-spin-button,
+.quantity-selector input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-selector input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.nav-tabs .nav-link {
+  color: #999;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #333;
+}
+
+.nav-tabs .nav-link.active {
+  color: #333 !important;
+  border-bottom: 3px solid #333 !important;
+}
+
+/* Cart Drawer & Wishlist Styles */
+.cart-item-image {
+    transition: transform 0.3s ease;
+}
+
+.cart-item:hover .cart-item-image {
+    transform: scale(1.02);
+}
+
+.quantity-toggle {
+    background: #f8f9fa;
+}
+
+.quantity-toggle button:hover {
+    background: #e9ecef;
+}
+
+.cart-footer {
+    background: #fff;
+}
+
+/* Ensure sticky top header has higher z-index than images */
+.sticky-top {
+    z-index: 1030;
+}
+
+.navbar {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+}
+

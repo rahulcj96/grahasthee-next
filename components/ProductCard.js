@@ -1,8 +1,13 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useStore } from '@/lib/store';
+import { useEffect, useState } from 'react';
 
 export default function ProductCard({ product }) {
     const {
+        id,
         title,
         slug,
         price,
@@ -10,6 +15,15 @@ export default function ProductCard({ product }) {
         image_url,
         alt_text
     } = product;
+
+    const { addToCart, toggleWishlist, wishlist } = useStore();
+    const [ mounted, setMounted ] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isInWishlist = mounted && wishlist.some(item => item.id === id);
 
     const discount = compare_at_price
         ? Math.round(((compare_at_price - price) / compare_at_price) * 100)
@@ -36,17 +50,38 @@ export default function ProductCard({ product }) {
                     </div>
                 </Link>
                 <div className="product-actions">
-                    <button className="btn btn-outline-dark btn-sm">
-                        <svg width="16" height="16" viewBox="0 0 24 24">
-                            <use xlinkHref="#heart"></use>
+                    <button
+                        className={`btn btn-sm ${isInWishlist ? 'border-0 p-0' : 'btn-outline-dark shadow-sm'}`}
+                        style={isInWishlist ? { color: '#ff4d4d', background: 'transparent', boxShadow: 'none' } : {}}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            toggleWishlist(product);
+                        }}
+                        title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24">
+                            <use xlinkHref={isInWishlist ? "#heart-solid" : "#heart"}></use>
                         </svg>
                     </button>
-                    <button className="btn btn-dark btn-sm">Add to Cart</button>
-                    <button className="btn btn-outline-dark btn-sm">
+                    <button
+                        className="btn btn-dark btn-sm shadow-sm"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            addToCart(product);
+                        }}
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#cartDrawer"
+                    >
+                        Add to Cart
+                    </button>
+                    <Link
+                        href={`/product/${slug}`}
+                        className="btn btn-outline-dark btn-sm shadow-sm"
+                    >
                         <svg width="16" height="16" viewBox="0 0 24 24">
                             <use xlinkHref="#search"></use>
                         </svg>
-                    </button>
+                    </Link>
                 </div>
             </div>
             <div className="product-info">

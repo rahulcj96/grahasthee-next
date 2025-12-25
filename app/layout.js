@@ -11,6 +11,7 @@ import "./globals.css";
 import SvgIcons from "@/components/SvgIcons";
 import BootstrapClient from "@/components/BootstrapClient";
 import AOSClient from "@/components/AOSClient";
+import CartDrawer from "@/components/CartDrawer";
 
 const jost = Jost({
   subsets: [ "latin" ],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
         <BootstrapClient />
         <AOSClient />
         <SvgIcons />
+        <CartDrawer />
         {children}
       </body>
     </html>
