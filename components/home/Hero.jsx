@@ -83,16 +83,18 @@ export default function Hero() {
                         {categories.map((category) => (
                             <SwiperSlide key={category.id}>
                                 <div className="banner-item image-zoom-effect">
-                                    <div className="image-holder">
-                                        <Image
-                                            src={category.image_url}
-                                            alt={category.title}
-                                            width={387}
-                                            height={580}
-                                            className="img-fluid"
-                                            style={{ objectFit: 'cover' }}
-                                        />
-                                    </div>
+                                    <Link href={`/shop?category=${category.slug}`} className="item-anchor">
+                                        <div className="image-holder">
+                                            <Image
+                                                src={category.image_url}
+                                                alt={category.title}
+                                                width={387}
+                                                height={580}
+                                                className="img-fluid"
+                                                style={{ objectFit: 'cover' }}
+                                            />
+                                        </div>
+                                    </Link>
                                     <div className="banner-content py-4">
                                         <h5 className="element-title text-uppercase">
                                             <Link href={`/shop?category=${category.slug}`} className="item-anchor">
