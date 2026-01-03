@@ -18,7 +18,7 @@ export default function ProductGallery({ images, productTitle }) {
 
     return (
         <div className="product-gallery">
-            <div className="main-image mb-4 position-relative" style={{ height: '500px', overflow: 'hidden' }}>
+            <div className="main-image mb-4 position-relative" style={{ width: '100%', aspectRatio: '4/5', overflow: 'hidden' }}>
                 <Image
                     src={selectedImage.image_url}
                     alt={selectedImage.alt_text || productTitle}

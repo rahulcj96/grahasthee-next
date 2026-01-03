@@ -60,8 +60,27 @@ export default function ImageUploadPage() {
                             <div className="card shadow border-0 p-4">
                                 <h2 className="text-center mb-4 text-uppercase fw-bold">Image Upload Tool</h2>
                                 <p className="text-muted text-center mb-4">
-                                    Upload product images here to get a public URL for your database.
+                                    Upload images here to get a public URL for your database.
                                 </p>
+
+                                <div className="alert alert-warning mb-4 border-0 shadow-sm" style={{ backgroundColor: '#fff8f0' }}>
+                                    <h6 className="fw-bold mb-2 text-dark">
+                                        <i className="bi bi-info-circle-fill me-2" style={{ color: '#9e6218' }}></i>
+                                        Recommended Guidelines
+                                    </h6>
+                                    <div className="row small mt-3">
+                                        <div className="col-6 border-end">
+                                            <p className="mb-1 fw-bold text-uppercase" style={{ fontSize: '0.75rem', color: '#9e6218' }}>Product Images</p>
+                                            <p className="mb-0 text-dark">Ratio: <strong>4:5</strong></p>
+                                            <p className="mb-0 text-dark">Size: <strong>1200 x 1500 px</strong></p>
+                                        </div>
+                                        <div className="col-6 ps-3">
+                                            <p className="mb-1 fw-bold text-uppercase" style={{ fontSize: '0.75rem', color: '#9e6218' }}>Category Banners</p>
+                                            <p className="mb-0 text-dark">Ratio: <strong>2:3</strong></p>
+                                            <p className="mb-0 text-dark">Size: <strong>1000 x 1500 px</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div className="mb-4">
                                     <label htmlFor="file-upload" className="form-label fw-bold">Select Product Image</label>

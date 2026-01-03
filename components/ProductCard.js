@@ -33,12 +33,12 @@ export default function ProductCard({ product }) {
         <div className="product-card" data-aos="fade-up">
             <div className="product-image-container image-zoom-effect">
                 <Link href={`/product/${slug}`} className="d-block w-100">
-                    <div className="image-holder" style={{ width: '100%', height: '350px', overflow: 'hidden' }}>
+                    <div className="image-holder" style={{ width: '100%', aspectRatio: '4/5', overflow: 'hidden' }}>
                         <Image
                             src={image_url || '/placeholder.webp'}
                             alt={title}
                             width={400}
-                            height={350}
+                            height={500}
                             className="w-100 h-100"
                             style={{ objectFit: 'cover' }}
                             priority
@@ -48,7 +48,7 @@ export default function ProductCard({ product }) {
                 <div className="product-actions">
                     <button
                         className={`btn btn-sm ${isInWishlist ? 'border-0 p-0' : 'btn-outline-dark shadow-sm'}`}
-                        style={isInWishlist ? { color: '#ff4d4d', background: 'transparent', boxShadow: 'none' } : {}}
+                        style={isInWishlist ? { color: '#9e6218', background: 'transparent', boxShadow: 'none' } : {}}
                         onClick={(e) => {
                             e.preventDefault();
                             toggleWishlist(product);

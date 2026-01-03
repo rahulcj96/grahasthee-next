@@ -63,7 +63,7 @@ export default function ProductActions({ product }) {
             </button>
             <button
                 className={`btn py-3 px-2 ${isInWishlist ? 'border-0' : 'btn-outline-dark shadow-sm'}`}
-                style={isInWishlist ? { color: '#ff4d4d', background: 'transparent', boxShadow: 'none' } : {}}
+                style={isInWishlist ? { color: '#9e6218', background: 'transparent', boxShadow: 'none' } : {}}
                 id="wishlist-btn"
                 onClick={() => toggleWishlist(product)}
                 title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}

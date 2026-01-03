@@ -9,15 +9,15 @@ export default function Categories() {
                     <div className="row">
                         <div className="col-md-4">
                             <div className="cat-item image-zoom-effect">
-                                <div className="image-holder">
+                                <div className="image-holder" style={{ width: "100%", aspectRatio: "2/3", overflow: "hidden" }}>
                                     <Link href="/shop?category=cotton-pillow-covers">
                                         <Image
                                             src="/images/categories/pillow-covers.webp"
                                             alt="categories"
-                                            width={400}
-                                            height={400}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
+                                            width={1000}
+                                            height={1500}
+                                            className="product-image img-fluid w-100 h-100"
+                                            style={{ objectFit: "cover" }}
                                         />
                                     </Link>
                                 </div>
@@ -26,15 +26,15 @@ export default function Categories() {
                         </div>
                         <div className="col-md-4">
                             <div className="cat-item image-zoom-effect">
-                                <div className="image-holder">
+                                <div className="image-holder" style={{ width: "100%", aspectRatio: "2/3", overflow: "hidden" }}>
                                     <Link href="/shop?category=luxe-linen-bath-towels">
                                         <Image
                                             src="/images/categories/bath-towels.webp"
                                             alt="categories"
-                                            width={400}
-                                            height={400}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
+                                            width={1000}
+                                            height={1500}
+                                            className="product-image img-fluid w-100 h-100"
+                                            style={{ objectFit: "cover" }}
                                         />
                                     </Link>
                                 </div>
@@ -43,15 +43,15 @@ export default function Categories() {
                         </div>
                         <div className="col-md-4">
                             <div className="cat-item image-zoom-effect">
-                                <div className="image-holder">
+                                <div className="image-holder" style={{ width: "100%", aspectRatio: "2/3", overflow: "hidden" }}>
                                     <Link href="/shop?category=cozy-corners">
                                         <Image
                                             src="/images/categories/cozy-corners.webp"
                                             alt="categories"
-                                            width={400}
-                                            height={400}
-                                            className="product-image img-fluid"
-                                            style={{ width: "100%", height: "auto" }}
+                                            width={1000}
+                                            height={1500}
+                                            className="product-image img-fluid w-100 h-100"
+                                            style={{ objectFit: "cover" }}
                                         />
                                     </Link>
                                 </div>
