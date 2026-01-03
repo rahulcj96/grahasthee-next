@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import { Jost, Marcellus } from "next/font/google";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "swiper/css";
