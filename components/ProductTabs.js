@@ -11,11 +11,16 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
     ].filter(tab => tab.show);
 
     const [ activeTab, setActiveTab ] = useState(availableTabs[ 0 ]?.id || 'specs');
+    const [ openFaq, setOpenFaq ] = useState(null);
 
     if (availableTabs.length === 0) return null;
 
     // Ensure active tab is still valid after filtering
     const currentActiveTab = availableTabs.find(t => t.id === activeTab) ? activeTab : availableTabs[ 0 ]?.id;
+
+    const toggleFaq = (index) => {
+        setOpenFaq(openFaq === index ? null : index);
+    };
 
     return (
         <div className="product-tabs mt-5">
@@ -72,16 +77,18 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
                                         <div className="accordion-item border-bottom py-2" key={index} style={{ backgroundColor: 'transparent' }}>
                                             <h2 className="accordion-header">
                                                 <button
-                                                    className="accordion-button collapsed px-0 bg-transparent fw-bold shadow-none"
+                                                    className={`accordion-button ${openFaq === index ? '' : 'collapsed'} px-0 bg-transparent fw-bold shadow-none`}
                                                     type="button"
-                                                    data-bs-toggle="collapse"
-                                                    data-bs-target={`#faq-${index}`}
+                                                    onClick={() => toggleFaq(index)}
+                                                    aria-expanded={openFaq === index}
                                                     style={{ border: 'none', color: '#333' }}
                                                 >
                                                     {item.question}
                                                 </button>
                                             </h2>
-                                            <div id={`faq-${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                            <div
+                                                className={`accordion-collapse collapse ${openFaq === index ? 'show' : ''}`}
+                                            >
                                                 <div className="accordion-body px-0 text-secondary">
                                                     {item.answer}
                                                 </div>

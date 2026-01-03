@@ -3,16 +3,27 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useStore } from "@/lib/store";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Header() {
-    const { cart, wishlist } = useStore();
+    const { cart, wishlist, setIsCartOpen } = useStore();
+    const pathname = usePathname();
     const [ mounted, setMounted ] = useState(false);
+    const [ isMenuOpen, setIsMenuOpen ] = useState(false);
+
+    // Close menu when route changes
+    useEffect(() => {
+        setIsMenuOpen(false);
+        setIsCartOpen(false);
+    }, [ pathname, setIsCartOpen ]);
 
     // Prevent hydration mismatch by waiting for mount
     useEffect(() => {
         setMounted(true);
     }, []);
+
+
 
     const cartCount = mounted ? cart.length : 0;
     const wishlistCount = mounted ? wishlist.length : 0;
@@ -50,8 +61,7 @@ export default function Header() {
 
                                 <button
                                     className="btn p-0 position-relative border-0"
-                                    data-bs-toggle="offcanvas"
-                                    data-bs-target="#cartDrawer"
+                                    onClick={() => setIsCartOpen(true)}
                                 >
                                     <svg width="24" height="24" viewBox="0 0 24 24">
                                         <use xlinkHref="#cart"></use>
@@ -64,7 +74,11 @@ export default function Header() {
                                 </button>
                             </div>
 
-                            <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                            <button
+                                className="navbar-toggler border-0 shadow-none"
+                                type="button"
+                                onClick={() => setIsMenuOpen(true)}
+                            >
                                 <span className="navbar-toggler-icon"></span>
                             </button>
                         </div>
@@ -88,29 +102,54 @@ export default function Header() {
                 </div>
             </nav>
 
-            {/* Mobile Menu Offcanvas - Moved outside nav to prevent stacking issues */}
-            <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            {/* Mobile Menu Offcanvas - Managed via React State */}
+            <div
+                className={`offcanvas offcanvas-end ${isMenuOpen ? 'show' : ''}`}
+                style={{
+                    visibility: isMenuOpen ? 'visible' : 'hidden',
+                    display: 'block'
+                }}
+                tabIndex="-1"
+                id="offcanvasNavbar"
+            >
                 <div className="offcanvas-header border-bottom">
-                    <h5 className="offcanvas-title fw-bold text-uppercase" id="offcanvasNavbarLabel">Menu</h5>
-                    <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <h5 className="offcanvas-title fw-bold text-uppercase">Menu</h5>
+                    <button
+                        type="button"
+                        className="btn-close text-reset shadow-none"
+                        onClick={() => setIsMenuOpen(false)}
+                        aria-label="Close"
+                    ></button>
                 </div>
 
                 <div className="offcanvas-body">
                     <ul className="navbar-nav gap-2">
                         <li className="nav-item">
-                            <Link className="nav-link d-flex align-items-center gap-3 py-3 border-bottom" href="/" data-bs-dismiss="offcanvas">
+                            <Link
+                                className="nav-link d-flex align-items-center gap-3 py-3 border-bottom"
+                                href="/"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
                                 <svg width="24" height="24"><use xlinkHref="#home"></use></svg>
                                 <span>Home</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link d-flex align-items-center gap-3 py-3 border-bottom" href="/shop" data-bs-dismiss="offcanvas">
+                            <Link
+                                className="nav-link d-flex align-items-center gap-3 py-3 border-bottom"
+                                href="/shop"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
                                 <svg width="24" height="24"><use xlinkHref="#shopping-bag"></use></svg>
                                 <span>Shop</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link d-flex align-items-center gap-3 py-3 border-bottom" href="#footer" data-bs-dismiss="offcanvas">
+                            <Link
+                                className="nav-link d-flex align-items-center gap-3 py-3 border-bottom"
+                                href="#footer"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
                                 <svg width="24" height="24"><use xlinkHref="#mail"></use></svg>
                                 <span>Contact</span>
                             </Link>
@@ -118,6 +157,15 @@ export default function Header() {
                     </ul>
                 </div>
             </div>
+
+            {/* Managed Backdrop */}
+            {isMenuOpen && (
+                <div
+                    className="offcanvas-backdrop fade show"
+                    onClick={() => setIsMenuOpen(false)}
+                    style={{ zIndex: 1040 }}
+                ></div>
+            )}
         </>
     );
 }

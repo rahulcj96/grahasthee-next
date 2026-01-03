@@ -4,20 +4,23 @@ import ProductCard from "@/components/ProductCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import SortFilter from "@/components/SortFilter";
 import StockFilter from "@/components/StockFilter";
+import Pagination from "@/components/Pagination";
 import { supabase } from "@/lib/supabaseClient";
 import Reveal from "@/components/Reveal";
 
-async function getProducts(categorySlug, sortBy, inStock) {
+const ITEMS_PER_PAGE = 12;
+
+async function getProducts(categorySlug, sortBy, inStock, page = 1) {
     let query = supabase
         .from('products')
         .select(`
-      *,
-      product_images!inner (
-        image_url,
-        alt_text,
-        is_primary
-      )
-    `)
+            *,
+            product_images!inner (
+                image_url,
+                alt_text,
+                is_primary
+            )
+        `, { count: 'exact' })
         .eq('product_images.is_primary', true);
 
     if (categorySlug) {
@@ -46,14 +49,20 @@ async function getProducts(categorySlug, sortBy, inStock) {
         query = query.order('id', { ascending: true });
     }
 
-    const { data, error } = await query;
+    // Pagination range
+    const from = (page - 1) * ITEMS_PER_PAGE;
+    const to = from + ITEMS_PER_PAGE - 1;
+
+    query = query.range(from, to);
+
+    const { data, error, count } = await query;
 
     if (error) {
         console.error('Error fetching products:', error);
-        return [];
+        return { products: [], totalCount: 0 };
     }
 
-    return data.map(product => {
+    const transformedProducts = data.map(product => {
         let imageUrl = product.product_images?.[ 0 ]?.image_url;
         if (imageUrl && imageUrl.startsWith('https://grahasthee.com/assets/')) {
             imageUrl = imageUrl.replace('https://grahasthee.com/assets/', '/');
@@ -64,6 +73,8 @@ async function getProducts(categorySlug, sortBy, inStock) {
             alt_text: product.product_images?.[ 0 ]?.alt_text
         };
     });
+
+    return { products: transformedProducts, totalCount: count || 0 };
 }
 
 async function getCategories() {
@@ -83,9 +94,11 @@ export default async function ShopPage({ searchParams }) {
     const category = params?.category;
     const sort = params?.sort;
     const inStock = params?.inStock;
+    const page = parseInt(params?.page) || 1;
 
-    const products = await getProducts(category, sort, inStock);
+    const { products, totalCount } = await getProducts(category, sort, inStock, page);
     const categories = await getCategories();
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
     return (
         <>
@@ -130,20 +143,6 @@ export default async function ShopPage({ searchParams }) {
                                         <StockFilter />
                                     </div>
 
-                                    <div className="filter-group ms-auto">
-                                        <div className="btn-group" role="group">
-                                            <button type="button" className="btn btn-outline-secondary active">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-grid-3x3-gap" viewBox="0 0 16 16">
-                                                    <path d="M4 2v2H2V2h2zm1 12v-2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm5 10v-2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zM9 2v2H7V2h2zm5 0v2h-2V2h2zM4 7v2H2V7h2zm5 0v2H7V7h2zm5 0h-2v2h2V7zM4 12v2H2v-2h2zm5 0v2H7v-2h2zm5 0v2h-2v-2h2zM12 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zm-1 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zm1 4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-2z" />
-                                                </svg>
-                                            </button>
-                                            <button type="button" className="btn btn-outline-secondary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16">
-                                                    <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -169,24 +168,11 @@ export default async function ShopPage({ searchParams }) {
                             </div>
                         </div>
 
-                        {/* Pagination */}
-                        <div className="row mt-5">
-                            <div className="col-md-12">
-                                <nav aria-label="Product pagination">
-                                    <ul className="pagination">
-                                        <li className="page-item disabled">
-                                            <a className="page-link" href="#" tabIndex="-1" aria-disabled="true">Previous</a>
-                                        </li>
-                                        <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                        <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                        <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                        <li className="page-item">
-                                            <a className="page-link" href="#">Next</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            searchParams={params}
+                        />
                     </div>
                 </section>
             </main>

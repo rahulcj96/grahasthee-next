@@ -17,7 +17,7 @@ export default function ProductCard({ product }) {
         alt_text
     } = product;
 
-    const { addToCart, toggleWishlist, wishlist } = useStore();
+    const { addToCart, removeFromCart, toggleWishlist, wishlist, cart, setIsCartOpen } = useStore();
     const [ mounted, setMounted ] = useState(false);
 
     useEffect(() => {
@@ -25,6 +25,7 @@ export default function ProductCard({ product }) {
     }, []);
 
     const isInWishlist = mounted && wishlist.some(item => item.id === id);
+    const isInCart = mounted && cart.some(item => item.id === id);
 
     const discount = compare_at_price
         ? Math.round(((compare_at_price - price) / compare_at_price) * 100)
@@ -62,15 +63,22 @@ export default function ProductCard({ product }) {
                             </svg>
                         </button>
                         <button
-                            className="btn btn-dark btn-sm shadow-sm"
+                            className={`btn btn-sm shadow-sm d-flex align-items-center justify-content-center ${isInCart ? 'btn-outline-dark' : 'btn-dark'}`}
                             onClick={(e) => {
                                 e.preventDefault();
-                                addToCart(product);
+                                if (isInCart) {
+                                    removeFromCart(id);
+                                } else {
+                                    addToCart(product);
+                                    setIsCartOpen(true);
+                                }
                             }}
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#cartDrawer"
+                            title={isInCart ? "Remove from Cart" : "Add to Cart"}
                         >
-                            Add to Cart
+                            <span className="d-none d-md-inline">{isInCart ? 'In Cart' : 'Add to Cart'}</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" className="d-md-none">
+                                <use xlinkHref={isInCart ? "#check" : "#cart"}></use>
+                            </svg>
                         </button>
                         <Link
                             href={`/product/${slug}`}

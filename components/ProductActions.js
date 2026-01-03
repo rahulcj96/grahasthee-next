@@ -6,7 +6,7 @@ import { useStore } from '@/lib/store';
 export default function ProductActions({ product }) {
     const { stock_quantity: stockQuantity } = product;
     const [ quantity, setQuantity ] = useState(1);
-    const { addToCart, toggleWishlist, wishlist } = useStore();
+    const { addToCart, removeFromCart, toggleWishlist, wishlist, cart, setIsCartOpen } = useStore();
     const [ mounted, setMounted ] = useState(false);
 
     useEffect(() => {
@@ -14,6 +14,7 @@ export default function ProductActions({ product }) {
     }, []);
 
     const isInWishlist = mounted && wishlist.some(item => item.id === product.id);
+    const isInCart = mounted && cart.some(item => item.id === product.id);
 
     const handleIncrement = () => {
         if (quantity < stockQuantity && quantity < 10) {
@@ -52,14 +53,19 @@ export default function ProductActions({ product }) {
                 </button>
             </div>
             <button
-                className="btn btn-dark flex-fill py-3 text-uppercase fw-bold shadow-sm"
+                className={`btn flex-fill py-3 text-uppercase fw-bold shadow-sm ${isInCart ? 'btn-outline-dark' : 'btn-dark'}`}
                 id="add-to-cart"
                 disabled={stockQuantity === 0}
-                onClick={() => addToCart(product, quantity)}
-                data-bs-toggle="offcanvas"
-                data-bs-target="#cartDrawer"
+                onClick={() => {
+                    if (isInCart) {
+                        removeFromCart(product.id);
+                    } else {
+                        addToCart(product, quantity);
+                        setIsCartOpen(true);
+                    }
+                }}
             >
-                {stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                {stockQuantity === 0 ? 'Out of Stock' : isInCart ? 'In Cart' : 'Add to Cart'}
             </button>
             <button
                 className={`btn py-3 px-2 ${isInWishlist ? 'border-0' : 'btn-outline-dark shadow-sm'}`}
