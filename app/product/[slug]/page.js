@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import ProductGallery from '@/components/ProductGallery';
 import ProductActions from '@/components/ProductActions';
 import RelatedProducts from '@/components/RelatedProducts';
+import ProductTabs from '@/components/ProductTabs';
 import Link from 'next/link';
 import { SvgIcons } from '@/components/SvgIcons';
 import Reveal from '@/components/Reveal';
@@ -16,7 +17,8 @@ async function getProduct(slug) {
         .select(`
             *,
             categories(title, slug),
-            product_images(*)
+            product_images(*),
+            reviews(*)
         `)
         .eq('slug', slug)
         .single();
@@ -63,6 +65,11 @@ export default async function ProductDetailPage({ params }) {
     const discount = compare_at_price
         ? Math.round(((compare_at_price - price) / compare_at_price) * 100)
         : 0;
+
+    const reviewCount = product.reviews?.length || 0;
+    const avgRating = reviewCount > 0
+        ? (product.reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviewCount).toFixed(1)
+        : 5.0;
 
     return (
         <>
@@ -111,11 +118,11 @@ export default async function ProductDetailPage({ params }) {
                                         <div className="stars d-flex text-warning">
                                             {[ ...Array(5) ].map((_, i) => (
                                                 <svg key={i} width="20" height="20" viewBox="0 0 15 15" className="me-1">
-                                                    <use xlinkHref="#star-solid"></use>
+                                                    <use xlinkHref={i < Math.floor(avgRating) ? "#star-solid" : "#star-outline"}></use>
                                                 </svg>
                                             ))}
                                         </div>
-                                        <span className="ms-2 text-muted small">(4.8/5 based on 42 reviews)</span>
+                                        <span className="ms-2 text-muted small">({avgRating}/5 based on {reviewCount} reviews)</span>
                                     </div>
 
                                     <div className="product-description mb-4">
@@ -136,6 +143,17 @@ export default async function ProductDetailPage({ params }) {
                     </div>
                 </section>
 
+
+                <section className="product-tabs-section pb-5">
+                    <div className="container">
+                        <ProductTabs
+                            description={description}
+                            additionalInfo={product.additional_info}
+                            faq={product.faq}
+                            reviews={product.reviews}
+                        />
+                    </div>
+                </section>
 
                 <Suspense fallback={
                     <div className="container py-5 text-center">
