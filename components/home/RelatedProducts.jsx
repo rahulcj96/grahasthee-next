@@ -66,7 +66,7 @@ export default function RelatedProducts() {
         >
             <div className="container">
                 <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-                    <h4 className="text-uppercase">You May Also Like</h4>
+                    <h4 className="text-uppercase">Frequently bought together</h4>
                     <Link href="/shop" className="btn-link">
                         View All Products
                     </Link>

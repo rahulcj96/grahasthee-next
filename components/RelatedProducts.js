@@ -43,7 +43,7 @@ export default async function RelatedProducts({ categoryId, currentProductId }) 
         <section className="related-products py-5 bg-light mt-5">
             <div className="container">
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h3 className="text-uppercase fw-bold m-0 h5-mobile">You May Also Like</h3>
+                    <h3 className="text-uppercase fw-bold m-0 h5-mobile">Frequently bought together</h3>
                     <a href="/shop" className="text-dark text-decoration-none border-bottom border-dark small fw-bold view-all">VIEW ALL</a>
                 </div>
                 <div className="row g-4">

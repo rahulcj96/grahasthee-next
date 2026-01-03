@@ -3,6 +3,7 @@
 import { useStore } from '@/lib/store';
 import Image from 'next/image';
 import Link from 'next/link';
+import { CONTACT_INFO } from '@/lib/constants';
 
 export default function CartDrawer() {
     const { cart, removeFromCart, updateCartQuantity, clearCart } = useStore();
@@ -10,7 +11,7 @@ export default function CartDrawer() {
     const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     const handleCheckout = () => {
-        const phoneNumber = "918891888448"; // Updated to correct customer care number
+        const phoneNumber = CONTACT_INFO.whatsappNumber;
 
         let message = `*New Order from Grahasthee*%0A%0A`;
 

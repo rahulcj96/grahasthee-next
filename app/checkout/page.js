@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { CONTACT_INFO } from '@/lib/constants';
 
 export default function CheckoutPage() {
     const { cart, clearCart } = useStore();
@@ -94,7 +95,7 @@ export default function CheckoutPage() {
                 router.push('/orders');
             }, 2000);
         } else {
-            const phoneNumber = "919000000000"; // Shop owner number
+            const phoneNumber = CONTACT_INFO.whatsappNumber;
             let message = `*New Order: ${orderId.substring(0, 8)}*%0A%0A`;
             message += `*Items:*%0A`;
             cart.forEach(item => {
