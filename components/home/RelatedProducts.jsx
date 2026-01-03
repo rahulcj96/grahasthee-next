@@ -1,63 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
 import ProductCard from "@/components/ProductCard";
+import Reveal from "../Reveal";
 
-export default function RelatedProducts() {
-    const [ products, setProducts ] = useState([]);
-    const [ loading, setLoading ] = useState(true);
-
-    useEffect(() => {
-        async function fetchProducts() {
-            const { data, error } = await supabase
-                .from('products')
-                .select(`
-                    *,
-                    product_images!inner (
-                        image_url,
-                        alt_text,
-                        is_primary
-                    )
-                `)
-                .eq('product_images.is_primary', true)
-                .limit(8);
-
-            if (error) {
-                console.error('Error fetching products:', error);
-            } else {
-                const transformedData = data.map(product => {
-                    let imageUrl = product.product_images?.[ 0 ]?.image_url;
-                    if (imageUrl && imageUrl.startsWith('https://grahasthee.com/assets/')) {
-                        imageUrl = imageUrl.replace('https://grahasthee.com/assets/', '/');
-                    }
-                    return {
-                        ...product,
-                        image_url: imageUrl,
-                        alt_text: product.product_images?.[ 0 ]?.alt_text
-                    };
-                });
-                setProducts(transformedData);
-            }
-            setLoading(false);
-        }
-
-        fetchProducts();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="container py-5 text-center">
-                <div className="spinner-border text-dark" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        );
-    }
-
-    if (products.length === 0) return null;
+export default function RelatedProducts({ products = [] }) {
+    if (!products || products.length === 0) return null;
 
     return (
         <section
@@ -65,17 +14,19 @@ export default function RelatedProducts() {
             className="related-products product-carousel py-5 position-relative overflow-hidden"
         >
             <div className="container">
-                <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
+                <Reveal className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
                     <h4 className="text-uppercase">Frequently bought together</h4>
                     <Link href="/shop" className="btn-link">
                         View All Products
                     </Link>
-                </div>
-                <div className="position-relative">
+                </Reveal>
+                <Reveal animation="zoom-out" className="position-relative">
                     <Swiper
                         modules={[ Navigation ]}
                         spaceBetween={30}
                         slidesPerView={1}
+                        observer={true}
+                        observeParents={true}
                         navigation={{
                             nextEl: ".icon-arrow-right",
                             prevEl: ".icon-arrow-left",
@@ -85,8 +36,7 @@ export default function RelatedProducts() {
                             992: { slidesPerView: 3 },
                             768: { slidesPerView: 2 },
                         }}
-                        className="product-swiper open-up"
-                        data-aos="zoom-out"
+                        className="product-swiper"
                     >
                         {products.map((product) => (
                             <SwiperSlide key={product.id}>
@@ -104,7 +54,7 @@ export default function RelatedProducts() {
                             <use xlinkHref="#arrow-right"></use>
                         </svg>
                     </div>
-                </div>
+                </Reveal>
             </div>
         </section>
     );

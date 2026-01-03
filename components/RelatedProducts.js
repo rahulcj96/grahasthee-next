@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from './ProductCard';
+import Reveal from './Reveal';
 
 async function getRelatedProducts(categoryId, currentProductId) {
     const { data, error } = await supabase
@@ -42,14 +43,14 @@ export default async function RelatedProducts({ categoryId, currentProductId }) 
     return (
         <section className="related-products py-5 bg-light mt-5">
             <div className="container">
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <Reveal className="d-flex justify-content-between align-items-center mb-4">
                     <h3 className="text-uppercase fw-bold m-0 h5-mobile">Frequently bought together</h3>
                     <a href="/shop" className="text-dark text-decoration-none border-bottom border-dark small fw-bold view-all">VIEW ALL</a>
-                </div>
+                </Reveal>
                 <div className="row g-4">
-                    {relatedProducts.map(product => (
+                    {relatedProducts.map((product, index) => (
                         <div key={product.id} className="col-6 col-md-3">
-                            <ProductCard product={product} />
+                            <ProductCard product={product} delay={index * 100} />
                         </div>
                     ))}
                 </div>

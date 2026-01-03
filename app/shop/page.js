@@ -5,6 +5,7 @@ import CategoryFilter from "@/components/CategoryFilter";
 import SortFilter from "@/components/SortFilter";
 import StockFilter from "@/components/StockFilter";
 import { supabase } from "@/lib/supabaseClient";
+import Reveal from "@/components/Reveal";
 
 async function getProducts(categorySlug, sortBy, inStock) {
     let query = supabase
@@ -95,11 +96,15 @@ export default async function ShopPage({ searchParams }) {
                     <div className="container">
                         <div className="row">
                             <div className="col-md-12 text-center">
-                                <h1 className="section-title" data-aos="fade-up">Our Collection</h1>
-                                <p className="lead" data-aos="fade-up" data-aos-delay="300">
-                                    Discover our range of thoughtfully designed home essentials — from handcrafted cushion covers
-                                    to luxurious towels and eco-conscious lifestyle pieces.
-                                </p>
+                                <Reveal animation="fade-up">
+                                    <h1 className="section-title">Our Collection</h1>
+                                </Reveal>
+                                <Reveal animation="fade-up" delay={300}>
+                                    <p className="lead">
+                                        Discover our range of thoughtfully designed home essentials — from handcrafted cushion covers
+                                        to luxurious towels and eco-conscious lifestyle pieces.
+                                    </p>
+                                </Reveal>
                             </div>
                         </div>
                     </div>

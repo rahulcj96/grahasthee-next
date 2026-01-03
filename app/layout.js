@@ -10,7 +10,6 @@ import "./styles/swiper-arrows.css";
 import "./globals.css";
 import SvgIcons from "@/components/SvgIcons";
 import BootstrapClient from "@/components/BootstrapClient";
-import AOSClient from "@/components/AOSClient";
 import CartDrawer from "@/components/CartDrawer";
 
 const jost = Jost({
@@ -40,7 +39,6 @@ export default function RootLayout({ children }) {
         <SvgIcons />
         <CartDrawer />
         {children}
-        <AOSClient />
       </body>
     </html>
   );

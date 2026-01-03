@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 
 export default function VideoSection() {
@@ -5,7 +6,7 @@ export default function VideoSection() {
         <section className="video py-5 overflow-hidden">
             <div className="container-fluid">
                 <div className="row">
-                    <div className="video-content open-up" data-aos="zoom-out">
+                    <div className="video-content">
                         <div className="video-bg">
                             <Image
                                 src="/images/banner/banner.webp"

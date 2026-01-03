@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRouter } from 'next/navigation';
+import Reveal from '@/components/Reveal';
 
 export default function ProfilePage() {
     const [ loading, setLoading ] = useState(true);
@@ -88,83 +89,85 @@ export default function ProfilePage() {
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-12 col-lg-8">
-                            <div className="bg-white p-4 p-md-5 border rounded shadow-sm" data-aos="fade-up">
-                                <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                                    <h2 className="text-uppercase fw-bold mb-0">My Profile</h2>
-                                    <span className="badge bg-dark text-uppercase">{user.email}</span>
+                            <Reveal animation="fade-up">
+                                <div className="bg-white p-4 p-md-5 border rounded shadow-sm">
+                                    <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                                        <h2 className="text-uppercase fw-bold mb-0">My Profile</h2>
+                                        <span className="badge bg-dark text-uppercase">{user?.email}</span>
+                                    </div>
+
+                                    {message && (
+                                        <div className={`alert alert-${message.type} small fade show`} role="alert">
+                                            {message.text}
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handleUpdate}>
+                                        <div className="row g-3 mb-4">
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label small text-uppercase fw-bold text-muted">Full Name</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={profile.full_name}
+                                                    onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                                                    placeholder="Enter your full name"
+                                                />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label small text-uppercase fw-bold text-muted">Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    className="form-control"
+                                                    value={profile.phone}
+                                                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                                    placeholder="+91 99999 99999"
+                                                />
+                                            </div>
+                                            <div className="col-12">
+                                                <label className="form-label small text-uppercase fw-bold text-muted">Street Address</label>
+                                                <textarea
+                                                    className="form-control"
+                                                    rows="3"
+                                                    value={profile.address}
+                                                    onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+                                                    placeholder="Flat/House No., Colony, Area"
+                                                ></textarea>
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label small text-uppercase fw-bold text-muted">City</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={profile.city}
+                                                    onChange={(e) => setProfile({ ...profile, city: e.target.value })}
+                                                    placeholder="Enter your city"
+                                                />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label small text-uppercase fw-bold text-muted">Pincode</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={profile.pincode}
+                                                    onChange={(e) => setProfile({ ...profile, pincode: e.target.value })}
+                                                    placeholder="6-digit pincode"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="d-grid">
+                                            <button
+                                                type="submit"
+                                                className="btn btn-dark py-3 text-uppercase fw-bold shadow-sm"
+                                                disabled={updating}
+                                            >
+                                                {updating ? 'Saving Changes...' : 'Save Profile'}
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-
-                                {message && (
-                                    <div className={`alert alert-${message.type} small fade show`} role="alert">
-                                        {message.text}
-                                    </div>
-                                )}
-
-                                <form onSubmit={handleUpdate}>
-                                    <div className="row g-3 mb-4">
-                                        <div className="col-12 col-md-6">
-                                            <label className="form-label small text-uppercase fw-bold text-muted">Full Name</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={profile.full_name}
-                                                onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                                                placeholder="Enter your full name"
-                                            />
-                                        </div>
-                                        <div className="col-12 col-md-6">
-                                            <label className="form-label small text-uppercase fw-bold text-muted">Phone Number</label>
-                                            <input
-                                                type="tel"
-                                                className="form-control"
-                                                value={profile.phone}
-                                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                                                placeholder="+91 99999 99999"
-                                            />
-                                        </div>
-                                        <div className="col-12">
-                                            <label className="form-label small text-uppercase fw-bold text-muted">Street Address</label>
-                                            <textarea
-                                                className="form-control"
-                                                rows="3"
-                                                value={profile.address}
-                                                onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                                                placeholder="Flat/House No., Colony, Area"
-                                            ></textarea>
-                                        </div>
-                                        <div className="col-12 col-md-6">
-                                            <label className="form-label small text-uppercase fw-bold text-muted">City</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={profile.city}
-                                                onChange={(e) => setProfile({ ...profile, city: e.target.value })}
-                                                placeholder="Enter your city"
-                                            />
-                                        </div>
-                                        <div className="col-12 col-md-6">
-                                            <label className="form-label small text-uppercase fw-bold text-muted">Pincode</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={profile.pincode}
-                                                onChange={(e) => setProfile({ ...profile, pincode: e.target.value })}
-                                                placeholder="6-digit pincode"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="d-grid">
-                                        <button
-                                            type="submit"
-                                            className="btn btn-dark py-3 text-uppercase fw-bold shadow-sm"
-                                            disabled={updating}
-                                        >
-                                            {updating ? 'Saving Changes...' : 'Save Profile'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                            </Reveal>
                         </div>
                     </div>
                 </div>

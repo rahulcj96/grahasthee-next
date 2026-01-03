@@ -1,13 +1,12 @@
+"use client";
+import Reveal from "../Reveal";
+
 export default function Features() {
     return (
         <section className="features py-5">
             <div className="container">
                 <div className="row">
-                    <div
-                        className="col-md-3 text-center"
-                        data-aos="fade-in"
-                        data-aos-delay="0"
-                    >
+                    <Reveal className="col-md-3 text-center" animation="fade-in" delay={0}>
                         <div className="py-5">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -28,13 +27,9 @@ export default function Features() {
                                 traditional methods. Quality and care in every stitch.
                             </p>
                         </div>
-                    </div>
+                    </Reveal>
 
-                    <div
-                        className="col-md-3 text-center"
-                        data-aos="fade-in"
-                        data-aos-delay="300"
-                    >
+                    <Reveal className="col-md-3 text-center" animation="fade-in" delay={300}>
                         <div className="py-5">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -55,13 +50,9 @@ export default function Features() {
                                 impact on the planet.
                             </p>
                         </div>
-                    </div>
+                    </Reveal>
 
-                    <div
-                        className="col-md-3 text-center"
-                        data-aos="fade-in"
-                        data-aos-delay="600"
-                    >
+                    <Reveal className="col-md-3 text-center" animation="fade-in" delay={600}>
                         <div className="py-5">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -88,13 +79,9 @@ export default function Features() {
                                 and designed for real life.
                             </p>
                         </div>
-                    </div>
+                    </Reveal>
 
-                    <div
-                        className="col-md-3 text-center"
-                        data-aos="fade-in"
-                        data-aos-delay="900"
-                    >
+                    <Reveal className="col-md-3 text-center" animation="fade-in" delay={900}>
                         <div className="py-5">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +102,7 @@ export default function Features() {
                                 touch of everyday luxury to your home.
                             </p>
                         </div>
-                    </div>
+                    </Reveal>
                 </div>
             </div>
         </section>

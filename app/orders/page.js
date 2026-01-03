@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Reveal from '@/components/Reveal';
 
 export default function OrdersPage() {
     const [ orders, setOrders ] = useState([]);
@@ -56,54 +57,56 @@ export default function OrdersPage() {
                                 </div>
                             ) : (
                                 <div className="d-flex flex-column gap-4">
-                                    {orders.map((order) => (
-                                        <div key={order.id} className="bg-white p-4 border rounded shadow-sm" data-aos="fade-up">
-                                            <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3 g-3">
-                                                <div>
-                                                    <div className="small text-muted text-uppercase mb-1">Order ID</div>
-                                                    <div className="fw-bold fs-5 text-uppercase">{order.id.substring(0, 8)}</div>
+                                    {orders.map((order, index) => (
+                                        <Reveal key={order.id} animation="fade-up" delay={index * 100}>
+                                            <div className="bg-white p-4 border rounded shadow-sm">
+                                                <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3 g-3">
+                                                    <div>
+                                                        <div className="small text-muted text-uppercase mb-1">Order ID</div>
+                                                        <div className="fw-bold fs-5 text-uppercase">{order.id.substring(0, 8)}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="small text-muted text-uppercase mb-1">Date</div>
+                                                        <div className="fw-bold">{new Date(order.created_at).toLocaleDateString()}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="small text-muted text-uppercase mb-1">Total</div>
+                                                        <div className="fw-bold">₹{order.total_amount.toLocaleString()}</div>
+                                                    </div>
+                                                    <div>
+                                                        <span className={`badge text-uppercase p-2 ${order.status === 'pending' ? 'bg-warning text-dark' : 'bg-success'}`}>
+                                                            {order.status}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div className="small text-muted text-uppercase mb-1">Date</div>
-                                                    <div className="fw-bold">{new Date(order.created_at).toLocaleDateString()}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="small text-muted text-uppercase mb-1">Total</div>
-                                                    <div className="fw-bold">₹{order.total_amount.toLocaleString()}</div>
-                                                </div>
-                                                <div>
-                                                    <span className={`badge text-uppercase p-2 ${order.status === 'pending' ? 'bg-warning text-dark' : 'bg-success'}`}>
-                                                        {order.status}
-                                                    </span>
-                                                </div>
-                                            </div>
 
-                                            <div className="order-items">
-                                                <h6 className="small text-uppercase fw-bold text-muted mb-3">Items Purchased</h6>
-                                                <div className="row g-3">
-                                                    {order.items.map((item, idx) => (
-                                                        <div key={idx} className="col-12 col-md-6">
-                                                            <div className="d-flex align-items-center gap-3 p-2 border rounded bg-light-subtle">
-                                                                <div className="position-relative border rounded overflow-hidden" style={{ width: '50px', height: '50px', flexShrink: 0 }}>
-                                                                    <Image src={item.image_url || '/placeholder.webp'} alt={item.title} fill style={{ objectFit: 'cover' }} />
-                                                                </div>
-                                                                <div className="flex-grow-1 min-width-0">
-                                                                    <div className="small fw-bold text-truncate text-uppercase">{item.title}</div>
-                                                                    <div className="small text-muted">Qty: {item.quantity} × ₹{item.price}</div>
+                                                <div className="order-items">
+                                                    <h6 className="small text-uppercase fw-bold text-muted mb-3">Items Purchased</h6>
+                                                    <div className="row g-3">
+                                                        {order.items.map((item, idx) => (
+                                                            <div key={idx} className="col-12 col-md-6">
+                                                                <div className="d-flex align-items-center gap-3 p-2 border rounded bg-light-subtle">
+                                                                    <div className="position-relative border rounded overflow-hidden" style={{ width: '50px', height: '50px', flexShrink: 0 }}>
+                                                                        <Image src={item.image_url || '/placeholder.webp'} alt={item.title} fill style={{ objectFit: 'cover' }} />
+                                                                    </div>
+                                                                    <div className="flex-grow-1 min-width-0">
+                                                                        <div className="small fw-bold text-truncate text-uppercase">{item.title}</div>
+                                                                        <div className="small text-muted">Qty: {item.quantity} × ₹{item.price}</div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
-                                                <div className="small text-muted">
-                                                    Payment via: <span className="text-dark fw-bold text-uppercase">{order.payment_method}</span>
+                                                <div className="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                                                    <div className="small text-muted">
+                                                        Payment via: <span className="text-dark fw-bold text-uppercase">{order.payment_method}</span>
+                                                    </div>
+                                                    <button className="btn btn-sm btn-outline-dark text-uppercase small">Need Help?</button>
                                                 </div>
-                                                <button className="btn btn-sm btn-outline-dark text-uppercase small">Need Help?</button>
                                             </div>
-                                        </div>
+                                        </Reveal>
                                     ))}
                                 </div>
                             )}

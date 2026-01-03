@@ -8,6 +8,7 @@ import ProductActions from '@/components/ProductActions';
 import RelatedProducts from '@/components/RelatedProducts';
 import Link from 'next/link';
 import { SvgIcons } from '@/components/SvgIcons';
+import Reveal from '@/components/Reveal';
 
 async function getProduct(slug) {
     const { data: product, error } = await supabase
@@ -83,11 +84,11 @@ export default async function ProductDetailPage({ params }) {
                         </nav>
 
                         <div className="row">
-                            <div className="col-md-6 mb-5" data-aos="fade-right">
+                            <Reveal className="col-md-6 mb-5" animation="fade-right">
                                 <ProductGallery images={product_images} productTitle={title} />
-                            </div>
+                            </Reveal>
 
-                            <div className="col-md-6 mb-5" data-aos="fade-left">
+                            <Reveal className="col-md-6 mb-5" animation="fade-left">
                                 <div className="product-info ps-md-4">
                                     <h1 className="product-title text-uppercase mb-3 fw-bold" style={{ fontSize: '2.5rem' }}>{title}</h1>
                                     <div className="product-price mb-4">
@@ -130,7 +131,7 @@ export default async function ProductDetailPage({ params }) {
                                             : product_images?.[ 0 ]?.image_url
                                     }} />
                                 </div>
-                            </div>
+                            </Reveal>
                         </div>
                     </div>
                 </section>
