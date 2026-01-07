@@ -1,11 +1,51 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Table, Button, Input, Space, Image } from 'antd'
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons'
+import { Table, Button, Input, Space, Image, Popconfirm, message } from 'antd'
+import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import Link from 'next/link'
+import { supabase } from '@/lib/supabaseClient'
+import { useRouter } from 'next/navigation'
+import { resolveImageUrl } from '@/utils/imageUtils'
 
 export default function CategoriesTable({ initialData }) {
     const [ searchText, setSearchText ] = useState('')
+    const [ loading, setLoading ] = useState(false)
+    const router = useRouter()
+
+    const handleDelete = async (id) => {
+        try {
+            setLoading(true)
+
+            // Check for existing products
+            const { count, error: countError } = await supabase
+                .from('products')
+                .select('*', { count: 'exact', head: true })
+                .eq('category_id', id)
+
+            if (countError) throw countError
+
+            if (count > 0) {
+                message.warning(`Cannot delete category. It has ${count} products associated with it.`)
+                return
+            }
+
+            const { error } = await supabase
+                .from('categories')
+                .delete()
+                .eq('id', id)
+
+            if (error) throw error
+
+            message.success('Category deleted successfully')
+            router.refresh()
+        } catch (error) {
+            message.error('Failed to delete category')
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const columns = [
         {
@@ -13,9 +53,13 @@ export default function CategoriesTable({ initialData }) {
             dataIndex: 'image_url',
             key: 'image',
             render: (url) => (
-                url ?
-                    <Image src={url} width={50} height={50} style={{ objectFit: 'cover' }} /> :
-                    <div style={{ width: 50, height: 50, background: '#f0f0f0' }} />
+                <Image
+                    src={resolveImageUrl(url)}
+                    width={50}
+                    height={50}
+                    style={{ objectFit: 'cover', borderRadius: 4 }}
+                    fallback="/images/placeholder.webp"
+                />
             ),
         },
         {
@@ -38,8 +82,18 @@ export default function CategoriesTable({ initialData }) {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <a>Edit</a>
-                    <a style={{ color: 'red' }}>Delete</a>
+                    <Link href={`/admin/categories/${record.id}`}>
+                        <Button icon={<EditOutlined />} size="small">Edit</Button>
+                    </Link>
+                    <Popconfirm
+                        title="Delete this category?"
+                        description="Are you sure to delete this category?"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button icon={<DeleteOutlined />} danger size="small" loading={loading} />
+                    </Popconfirm>
                 </Space>
             ),
         },
@@ -54,7 +108,9 @@ export default function CategoriesTable({ initialData }) {
                     onChange={e => setSearchText(e.target.value)}
                     style={{ width: 300 }}
                 />
-                <Button type="primary" icon={<PlusOutlined />}>Create Category</Button>
+                <Link href="/admin/categories/create">
+                    <Button type="primary" icon={<PlusOutlined />}>Create Category</Button>
+                </Link>
             </div>
             <Table
                 columns={columns}

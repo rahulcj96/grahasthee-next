@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { resolveImageUrl } from '@/utils/imageUtils';
 
 export default function ProductGallery({ images, productTitle }) {
     const [ selectedImage, setSelectedImage ] = useState(images.find(img => img.is_primary) || images[ 0 ]);
@@ -20,7 +21,7 @@ export default function ProductGallery({ images, productTitle }) {
         <div className="product-gallery">
             <div className="main-image mb-4 position-relative" style={{ width: '100%', aspectRatio: '4/5', overflow: 'hidden' }}>
                 <Image
-                    src={selectedImage.image_url}
+                    src={resolveImageUrl(selectedImage.image_url)}
                     alt={selectedImage.alt_text || productTitle}
                     fill
                     style={{ objectFit: 'cover' }}
@@ -36,7 +37,7 @@ export default function ProductGallery({ images, productTitle }) {
                         onClick={() => setSelectedImage(img)}
                     >
                         <Image
-                            src={img.image_url}
+                            src={resolveImageUrl(img.image_url)}
                             alt={img.alt_text || productTitle}
                             fill
                             style={{ objectFit: 'cover' }}

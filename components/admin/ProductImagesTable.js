@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Table, Button, Input, Space, Image, Tooltip } from 'antd'
 import { SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons'
+import { resolveImageUrl } from '@/utils/imageUtils'
 
 export default function ProductImagesTable({ initialData }) {
     const [ searchText, setSearchText ] = useState('')
@@ -13,7 +14,13 @@ export default function ProductImagesTable({ initialData }) {
             dataIndex: 'image_url',
             key: 'image',
             render: (url) => (
-                <Image src={url} width={80} height={80} style={{ objectFit: 'contain', background: '#f5f5f5' }} />
+                <Image
+                    src={resolveImageUrl(url)}
+                    width={80}
+                    height={80}
+                    style={{ objectFit: 'contain', background: '#f5f5f5' }}
+                    fallback="/images/placeholder.webp"
+                />
             ),
         },
         {

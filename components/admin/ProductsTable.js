@@ -1,11 +1,46 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Table, Button, Input, Space, Tag, Image } from 'antd'
-import { SearchOutlined, PlusOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons'
+import { Table, Button, Input, Space, Tag, Image, Modal, Popconfirm, message } from 'antd'
+import { SearchOutlined, PlusOutlined, ExportOutlined, ImportOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons'
+import { resolveImageUrl } from '@/utils/imageUtils'
+import Link from 'next/link'
+import { supabase } from '@/lib/supabaseClient'
+import { useRouter } from 'next/navigation'
 
 export default function ProductsTable({ initialData }) {
     const [ searchText, setSearchText ] = useState('')
+    const [ isModalOpen, setIsModalOpen ] = useState(false)
+    const [ currentImages, setCurrentImages ] = useState([])
+    const router = useRouter()
+    const [ loading, setLoading ] = useState(false)
+
+    const handleDelete = async (id) => {
+        try {
+            setLoading(true)
+            // Note: If you have foreign key constraints with cascade delete on product_images, this will work automatically.
+            // If not, you might need to delete images first. Assuming cascade or simple delete for now.
+            const { error } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', id)
+
+            if (error) throw error
+
+            message.success('Product deleted successfully')
+            router.refresh()
+        } catch (error) {
+            message.error('Failed to delete product')
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const showImages = (images) => {
+        setCurrentImages(images || [])
+        setIsModalOpen(true)
+    }
 
     const columns = [
         {
@@ -14,7 +49,13 @@ export default function ProductsTable({ initialData }) {
             key: 'image',
             render: (images) => (
                 images && images[ 0 ] ?
-                    <Image src={images[ 0 ]} width={50} height={50} style={{ objectFit: 'cover' }} /> :
+                    <Image
+                        src={resolveImageUrl(images[ 0 ])}
+                        width={50}
+                        height={50}
+                        style={{ objectFit: 'cover' }}
+                        fallback="/images/placeholder.webp"
+                    /> :
                     <div style={{ width: 50, height: 50, background: '#f0f0f0' }} />
             ),
         },
@@ -62,8 +103,24 @@ export default function ProductsTable({ initialData }) {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <a>Edit</a>
-                    <a style={{ color: 'red' }}>Delete</a>
+                    <Button
+                        icon={<EyeOutlined />}
+                        size="small"
+                        onClick={() => showImages(record.images)}
+                        title="View Images"
+                    />
+                    <Link href={`/admin/products/${record.id}`}>
+                        <Button icon={<EditOutlined />} size="small">Edit</Button>
+                    </Link>
+                    <Popconfirm
+                        title="Delete this product?"
+                        description="Are you sure to delete this product?"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button icon={<DeleteOutlined />} danger size="small" type="text">Delete</Button>
+                    </Popconfirm>
                 </Space>
             ),
         },
@@ -81,7 +138,9 @@ export default function ProductsTable({ initialData }) {
                 <Space>
                     <Button icon={<ImportOutlined />}>Import</Button>
                     <Button icon={<ExportOutlined />}>Export</Button>
-                    <Button type="primary" icon={<PlusOutlined />}>Create Product</Button>
+                    <Link href="/admin/products/create">
+                        <Button type="primary" icon={<PlusOutlined />}>Create Product</Button>
+                    </Link>
                 </Space>
             </div>
             <Table
@@ -90,6 +149,31 @@ export default function ProductsTable({ initialData }) {
                 rowKey="id"
                 pagination={{ pageSize: 10 }}
             />
+
+            <Modal
+                title="Product Images"
+                open={isModalOpen}
+                onCancel={() => setIsModalOpen(false)}
+                footer={null}
+                width={800}
+            >
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+                    {currentImages.length > 0 ? (
+                        currentImages.map((url, index) => (
+                            <Image
+                                key={index}
+                                src={resolveImageUrl(url)}
+                                width={150}
+                                height={150}
+                                style={{ objectFit: 'cover' }}
+                                fallback="/images/placeholder.webp"
+                            />
+                        ))
+                    ) : (
+                        <p>No images available for this product.</p>
+                    )}
+                </div>
+            </Modal>
         </div>
     )
 }

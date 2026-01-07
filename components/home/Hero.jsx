@@ -4,6 +4,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import Link from "next/link";
 import Image from "next/image";
 import Reveal from "../Reveal";
+import { resolveImageUrl } from "@/utils/imageUtils";
 
 export default function Hero({ categories = [] }) {
     if (!categories || categories.length === 0) {
@@ -53,7 +54,7 @@ export default function Hero({ categories = [] }) {
                                     <Link href={`/shop?category=${category.slug}`} className="item-anchor">
                                         <div className="image-holder">
                                             <Image
-                                                src={category.image_url || '/images/placeholder.webp'}
+                                                src={resolveImageUrl(category.image_url)}
                                                 alt={category.title || 'Category'}
                                                 width={387}
                                                 height={580}

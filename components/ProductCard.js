@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useStore } from '@/lib/store';
 import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
+import { resolveImageUrl } from '@/utils/imageUtils';
 
 export default function ProductCard({ product }) {
     const {
@@ -38,7 +39,7 @@ export default function ProductCard({ product }) {
                     <Link href={`/product/${slug}`} className="d-block w-100">
                         <div className="image-holder" style={{ width: '100%', aspectRatio: '4/5', overflow: 'hidden' }}>
                             <Image
-                                src={image_url || '/placeholder.webp'}
+                                src={resolveImageUrl(image_url)}
                                 alt={title}
                                 width={400}
                                 height={500}

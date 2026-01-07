@@ -15,6 +15,9 @@ async function getProducts() {
       *,
       categories (
         title
+      ),
+      product_images (
+        image_url
       )
     `)
         .order('created_at', { ascending: false })
@@ -22,7 +25,8 @@ async function getProducts() {
     // Transform data for table if needed
     return products.map(p => ({
         ...p,
-        category: p.categories?.title || 'Uncategorized'
+        category: p.categories?.title || 'Uncategorized',
+        images: p.product_images?.map(img => img.image_url) || []
     }))
 }
 
