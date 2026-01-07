@@ -22,9 +22,9 @@ export default function AdminSidebar({ collapsed, isDarkMode }) {
 
     const menuItems = [
         {
-            key: '/admin/dashboard',
+            key: '/admin',
             icon: <DashboardOutlined />,
-            label: <Link href="/admin/dashboard">Dashboard</Link>,
+            label: <Link href="/admin">Dashboard</Link>,
         },
         {
             key: '/admin/categories',

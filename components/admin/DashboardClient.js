@@ -17,7 +17,7 @@ export default function DashboardClient({ stats }) {
                             title="Total Products"
                             value={stats.productCount}
                             prefix={<ShoppingOutlined style={{ color: '#1890ff' }} />}
-                            valueStyle={{ color: '#1890ff' }}
+                            styles={{ content: { color: '#1890ff' } }}
                         />
                     </Card>
                 </Col>
@@ -27,7 +27,7 @@ export default function DashboardClient({ stats }) {
                             title="Total Categories"
                             value={stats.categoryCount}
                             prefix={<AppstoreOutlined style={{ color: '#52c41a' }} />}
-                            valueStyle={{ color: '#52c41a' }}
+                            styles={{ content: { color: '#52c41a' } }}
                         />
                     </Card>
                 </Col>
@@ -37,7 +37,7 @@ export default function DashboardClient({ stats }) {
                             title="Total Orders"
                             value={stats.orderCount}
                             prefix={<ShoppingCartOutlined style={{ color: '#faad14' }} />}
-                            valueStyle={{ color: '#faad14' }}
+                            styles={{ content: { color: '#faad14' } }}
                         />
                     </Card>
                 </Col>

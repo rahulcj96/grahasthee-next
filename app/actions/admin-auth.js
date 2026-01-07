@@ -59,7 +59,7 @@ export async function loginAdmin(prevState, formData) {
         path: '/',
     })
 
-    redirect('/admin/dashboard')
+    redirect('/admin')
 }
 
 export async function logoutAdmin() {

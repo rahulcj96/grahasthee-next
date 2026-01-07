@@ -1,87 +1,55 @@
-'use client'
+import React from 'react'
+import LoginForm from '@/components/admin/LoginForm'
 
-import React, { useState } from 'react'
-import { Form, Input, Button, Card, Typography, ThemeConfig, ConfigProvider, theme } from 'antd'
-import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { loginAdmin } from '@/app/actions/admin-auth'
+async function getBingImage() {
+    try {
+        // Using fetch with cache control to ensure fresh daily image
+        // format=js is recommended as per user feedback, though json usually works too.
+        const response = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US', { next: { revalidate: 3600 } })
 
-const { Title } = Typography
-
-export default function AdminLoginPage() {
-    const [ loading, setLoading ] = useState(false)
-    const [ error, setError ] = useState('')
-
-    const onFinish = async (values) => {
-        setLoading(true)
-        setError('')
-
-        const formData = new FormData()
-        formData.append('username', values.username)
-        formData.append('password', values.password)
-
-        const result = await loginAdmin(null, formData)
-
-        if (result?.error) {
-            setError(result.error)
-            setLoading(false)
+        if (!response.ok) {
+            console.error('Bing API response not ok:', response.statusText)
+            throw new Error('Bing API response not ok')
         }
+
+        const data = await response.json()
+        const imagePath = data?.images?.[ 0 ]?.url
+
+        if (imagePath) {
+            return `https://www.bing.com${imagePath}`
+        }
+    } catch (error) {
+        console.error('Failed to fetch Bing image:', error)
     }
+    // Fallback to a reliable Unsplash image (Nature/Landscape)
+    return 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop'
+}
+
+export default async function AdminLoginPage() {
+    const bgImage = await getBingImage()
 
     return (
-        <ConfigProvider
-            theme={{
-                algorithm: theme.defaultAlgorithm,
-                token: {
-                    colorPrimary: '#1677ff',
-                },
-            }}
-        >
+        <div style={{
+            position: 'relative',
+            height: '100vh',
+            width: '100vw',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: `url(${bgImage}) no-repeat center center`,
+            backgroundSize: 'cover'
+        }}>
+            {/* Overlay for better text contrast if needed, but glass panel handles it */}
             <div style={{
                 display: 'flex',
-                justifyContent: 'center',
                 alignItems: 'center',
-                minHeight: '100vh',
-                background: '#f0f2f5'
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%'
             }}>
-                <Card style={{ width: 400, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                    <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                        <Title level={3}>Admin Login</Title>
-                    </div>
-
-                    <Form
-                        name="admin_login"
-                        onFinish={onFinish}
-                        layout="vertical"
-                        size="large"
-                    >
-                        <Form.Item
-                            name="username"
-                            rules={[ { required: true, message: 'Please input your username!' } ]}
-                        >
-                            <Input prefix={<UserOutlined />} placeholder="Username" />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="password"
-                            rules={[ { required: true, message: 'Please input your password!' } ]}
-                        >
-                            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
-                        </Form.Item>
-
-                        {error && (
-                            <div style={{ color: '#ff4d4f', marginBottom: 16, textAlign: 'center' }}>
-                                {error}
-                            </div>
-                        )}
-
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" block loading={loading}>
-                                Log in
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
+                <LoginForm />
             </div>
-        </ConfigProvider>
+        </div>
     )
 }
