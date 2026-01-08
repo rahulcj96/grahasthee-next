@@ -1,12 +1,19 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Table, Button, Input, Space, Image, Tooltip } from 'antd'
+import { Table, Button, Input, Space, Image, Tooltip, Popconfirm, message } from 'antd'
 import { SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { resolveImageUrl } from '@/utils/imageUtils'
+import { supabase } from '@/lib/supabaseClient'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function ProductImagesTable({ initialData }) {
     const [ searchText, setSearchText ] = useState('')
+    const [ loading, setLoading ] = useState(false)
+    const [ loadingId, setLoadingId ] = useState(null)
+    const [ messageApi, contextHolder ] = message.useMessage()
+    const router = useRouter()
 
     const columns = [
         {
@@ -51,7 +58,7 @@ export default function ProductImagesTable({ initialData }) {
             title: 'Date Added',
             dataIndex: 'created_at',
             key: 'created_at',
-            render: (date) => new Date(date).toLocaleDateString(),
+            render: (date) => new Date(date).toLocaleDateString('en-IN'),
             sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
         },
         {
@@ -59,14 +66,95 @@ export default function ProductImagesTable({ initialData }) {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button type="text" danger icon={<DeleteOutlined />}>Delete</Button>
+                    <Popconfirm
+                        title="Delete this image?"
+                        description="Are you sure to delete this image?"
+                        onConfirm={() => handleDelete(record.id, record.image_url, record.product_title, record)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button type="text" danger icon={<DeleteOutlined />} loading={loading && loadingId === record.id}>Delete</Button>
+                    </Popconfirm>
                 </Space>
             ),
         },
     ]
 
+    const handleDelete = async (id, imageUrl, productTitle, record) => {
+        try {
+            setLoading(true)
+            setLoadingId(id)
+
+            // 1. Check if this is the primary image
+            // We need to query this specific record to be sure, or trust the passed record if we included it in fetch. 
+            // The table fetch likely didn't join everything. But let's assume we can query it now.
+
+            const { data: imageRecord, error: fetchError } = await supabase
+                .from('product_images')
+                .select('*')
+                .eq('id', id)
+                .single()
+
+            if (fetchError) throw fetchError
+
+            // 2. Delete the record
+            const { error: deleteError } = await supabase
+                .from('product_images')
+                .delete()
+                .eq('id', id)
+
+            if (deleteError) throw deleteError
+
+            // 3. Reassign primary if needed
+            if (imageRecord.is_primary) {
+                // Find another image for this product
+                const { data: remainingImages, error: searchError } = await supabase
+                    .from('product_images')
+                    .select('*')
+                    .eq('product_id', imageRecord.product_id)
+                    .order('created_at', { ascending: true })
+                    .limit(1)
+
+                if (searchError) console.error('Error finding replacement primary:', searchError)
+
+                if (remainingImages && remainingImages.length > 0) {
+                    const newPrimary = remainingImages[ 0 ]
+                    const { error: updateError } = await supabase
+                        .from('product_images')
+                        .update({ is_primary: true })
+                        .eq('id', newPrimary.id)
+
+                    if (updateError) {
+                        console.error('Error setting new primary:', updateError)
+                        messageApi.warning('Image deleted, but failed to set new primary.')
+                    } else {
+                        messageApi.success('Image deleted. New primary image assigned.')
+                    }
+                } else {
+                    messageApi.success('Image deleted. No images remaining for product.')
+                }
+            } else {
+                messageApi.success('Image deleted successfully')
+            }
+
+            // 4. (Optional) Delete from storage - Keeping it simple, maybe just keep files for now as per plan implicitly (only DB focused).
+            // But if we have the URL, we could. Let's stick to DB logic first as requested.
+
+            // Refresh logic
+            router.refresh()
+
+        } catch (error) {
+            console.error(error)
+            messageApi.error('Failed to delete image')
+        } finally {
+            setLoading(false)
+            setLoadingId(null)
+        }
+    }
+
     return (
         <div>
+            {contextHolder}
             <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
                 <Input
                     placeholder="Search images..."
@@ -74,7 +162,9 @@ export default function ProductImagesTable({ initialData }) {
                     onChange={e => setSearchText(e.target.value)}
                     style={{ width: 300 }}
                 />
-                <Button type="primary" icon={<PlusOutlined />}>Add Image</Button>
+                <Link href="/admin/product-images/create">
+                    <Button type="primary" icon={<PlusOutlined />}>Add Image</Button>
+                </Link>
             </div>
             <Table
                 columns={columns}

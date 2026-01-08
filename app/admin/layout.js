@@ -4,9 +4,10 @@ import React, { useState } from 'react'
 import { Layout, ConfigProvider, theme, Button, Breadcrumb } from 'antd'
 import { usePathname } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
-import { BulbOutlined, BulbFilled, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { BulbOutlined, BulbFilled, MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined } from '@ant-design/icons'
 // Import CSS to ensure Antd styles work if not automatically handled
 import 'antd/dist/reset.css'
+import { logoutAdmin } from '@/app/actions/admin-auth'
 
 const { Header, Content, Footer } = Layout
 
@@ -63,6 +64,13 @@ export default function AdminLayout({ children }) {
                             icon={isDarkMode ? <BulbFilled /> : <BulbOutlined />}
                             onClick={() => setIsDarkMode(!isDarkMode)}
                             shape="circle"
+                            style={{ marginRight: 8 }}
+                        />
+                        <Button
+                            icon={<LogoutOutlined />}
+                            onClick={() => logoutAdmin()}
+                            shape="circle"
+                            danger
                         />
                     </Header>
                     <Content style={{ margin: '16px 16px' }}>

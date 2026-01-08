@@ -92,20 +92,7 @@ export default function AdminSidebar({ collapsed, isDarkMode }) {
                     items={menuItems}
                     style={{ borderRight: 0, flex: 1 }}
                 />
-
-                <div style={{ padding: '16px' }}>
-                    <Button
-                        type="primary"
-                        danger
-                        icon={<LogoutOutlined />}
-                        block={!collapsed}
-                        onClick={() => logoutAdmin()}
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                    >
-                        {!collapsed && 'Logout'}
-                    </Button>
-                </div>
             </div>
-        </Sider>
+        </Sider >
     )
 }

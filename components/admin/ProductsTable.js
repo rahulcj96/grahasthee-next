@@ -14,12 +14,20 @@ export default function ProductsTable({ initialData }) {
     const [ currentImages, setCurrentImages ] = useState([])
     const router = useRouter()
     const [ loading, setLoading ] = useState(false)
+    const [ messageApi, contextHolder ] = message.useMessage()
 
     const handleDelete = async (id) => {
         try {
             setLoading(true)
-            // Note: If you have foreign key constraints with cascade delete on product_images, this will work automatically.
-            // If not, you might need to delete images first. Assuming cascade or simple delete for now.
+
+            // Delete associated images first (Cascade delete)
+            const { error: imagesError } = await supabase
+                .from('product_images')
+                .delete()
+                .eq('product_id', id)
+
+            if (imagesError) throw imagesError
+
             const { error } = await supabase
                 .from('products')
                 .delete()
@@ -27,10 +35,10 @@ export default function ProductsTable({ initialData }) {
 
             if (error) throw error
 
-            message.success('Product deleted successfully')
+            messageApi.success('Product deleted successfully')
             router.refresh()
         } catch (error) {
-            message.error('Failed to delete product')
+            messageApi.error('Failed to delete product')
             console.error(error)
         } finally {
             setLoading(false)
@@ -128,6 +136,7 @@ export default function ProductsTable({ initialData }) {
 
     return (
         <div>
+            {contextHolder}
             <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
                 <Input
                     placeholder="Search products..."

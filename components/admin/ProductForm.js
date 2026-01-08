@@ -225,6 +225,8 @@ export default function ProductForm({ initialValues, title = 'Create Product', c
                                     fileList={fileList}
                                     onPreview={(file) => window.open(file.url, '_blank')}
                                     onRemove={handleRemove}
+                                    multiple={true}
+                                    accept="image/*"
                                 >
                                     <div>
                                         <UploadOutlined />

@@ -11,11 +11,13 @@ import { resolveImageUrl } from '@/utils/imageUtils'
 export default function CategoriesTable({ initialData }) {
     const [ searchText, setSearchText ] = useState('')
     const [ loading, setLoading ] = useState(false)
+    const [ messageApi, contextHolder ] = message.useMessage()
     const router = useRouter()
 
     const handleDelete = async (id) => {
         try {
             setLoading(true)
+            console.log('Attempting to delete category:', id)
 
             // Check for existing products
             const { count, error: countError } = await supabase
@@ -24,9 +26,10 @@ export default function CategoriesTable({ initialData }) {
                 .eq('category_id', id)
 
             if (countError) throw countError
+            console.log('Product count for category:', count)
 
             if (count > 0) {
-                message.warning(`Cannot delete category. It has ${count} products associated with it.`)
+                messageApi.warning(`Cannot delete category. It has ${count} products associated with it.`)
                 return
             }
 
@@ -37,10 +40,10 @@ export default function CategoriesTable({ initialData }) {
 
             if (error) throw error
 
-            message.success('Category deleted successfully')
+            messageApi.success('Category deleted successfully')
             router.refresh()
         } catch (error) {
-            message.error('Failed to delete category')
+            messageApi.error('Failed to delete category')
             console.error(error)
         } finally {
             setLoading(false)
@@ -101,6 +104,7 @@ export default function CategoriesTable({ initialData }) {
 
     return (
         <div>
+            {contextHolder}
             <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
                 <Input
                     placeholder="Search categories..."

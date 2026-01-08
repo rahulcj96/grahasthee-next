@@ -13,6 +13,7 @@ const { TextArea } = Input;
 export default function CategoryForm({ initialValues, title = 'Create Category' }) {
     const [ form ] = Form.useForm();
     const router = useRouter();
+    const [ messageApi, contextHolder ] = message.useMessage();
     const [ uploading, setUploading ] = useState(false);
     const [ imageUrl, setImageUrl ] = useState(initialValues?.image_url || '');
     const [ loading, setLoading ] = useState(false);
@@ -58,9 +59,9 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
                 .getPublicUrl(filePath);
 
             setImageUrl(data.publicUrl);
-            message.success('Image uploaded successfully!');
+            messageApi.success('Image uploaded successfully!');
         } catch (err) {
-            message.error(err.message || 'Upload failed');
+            messageApi.error(err.message || 'Upload failed');
         } finally {
             setUploading(false);
         }
@@ -83,7 +84,7 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
                     .eq('id', initialValues.id);
 
                 if (error) throw error;
-                message.success('Category updated successfully');
+                messageApi.success('Category updated successfully');
             } else {
                 // Insert
                 const { error } = await supabase
@@ -91,14 +92,14 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
                     .insert([ formData ]);
 
                 if (error) throw error;
-                message.success('Category created successfully');
+                messageApi.success('Category created successfully');
             }
 
             router.push('/admin/categories');
             router.refresh();
         } catch (error) {
             console.error('Error saving category:', error);
-            message.error(error.message || 'Failed to save category');
+            messageApi.error(error.message || 'Failed to save category');
         } finally {
             setLoading(false);
         }
@@ -106,6 +107,7 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
 
     return (
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            {contextHolder}
             <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Space>
                     <Link href="/admin/categories">
