@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { Table, Button, Input, Space, Image, Popconfirm, message } from 'antd'
+import { Table, Button, Input, Space, Image, Popconfirm, message, Tooltip } from 'antd'
 import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons'
 import Papa from 'papaparse'
 import Link from 'next/link'
@@ -139,9 +139,11 @@ export default function CategoriesTable({ initialData }) {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Link href={`/admin/categories/${record.id}`}>
-                        <Button icon={<EditOutlined />} size="small">Edit</Button>
-                    </Link>
+                    <Tooltip title="Edit">
+                        <Link href={`/admin/categories/${record.id}`}>
+                            <Button icon={<EditOutlined />} size="small" />
+                        </Link>
+                    </Tooltip>
                     <Popconfirm
                         title="Delete this category?"
                         description="Are you sure to delete this category?"
@@ -149,7 +151,9 @@ export default function CategoriesTable({ initialData }) {
                         okText="Yes"
                         cancelText="No"
                     >
-                        <Button icon={<DeleteOutlined />} danger size="small" loading={loading} />
+                        <Tooltip title="Delete">
+                            <Button icon={<DeleteOutlined />} danger size="small" loading={loading} />
+                        </Tooltip>
                     </Popconfirm>
                 </Space>
             ),

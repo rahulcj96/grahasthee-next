@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useRef } from 'react'
-import { Table, Button, Input, Space, Tag, Image, Modal, Popconfirm, message, Select, Radio, InputNumber, Row, Col } from 'antd'
+import { Table, Button, Input, Space, Tag, Image, Modal, Popconfirm, message, Select, Radio, InputNumber, Row, Col, Tooltip } from 'antd'
 import { SearchOutlined, PlusOutlined, ExportOutlined, ImportOutlined, DeleteOutlined, EditOutlined, EyeOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons'
 import { resolveImageUrl } from '@/utils/imageUtils'
 import Link from 'next/link'
@@ -239,9 +239,11 @@ export default function ProductsTable({ initialData, categories }) {
                         onClick={() => showImages(record.images)}
                         title="View Images"
                     />
-                    <Link href={`/admin/products/${record.id}`}>
-                        <Button icon={<EditOutlined />} size="small">Edit</Button>
-                    </Link>
+                    <Tooltip title="Edit Product">
+                        <Link href={`/admin/products/${record.id}`}>
+                            <Button icon={<EditOutlined />} size="small" />
+                        </Link>
+                    </Tooltip>
                     <Popconfirm
                         title="Delete this product?"
                         description="Are you sure to delete this product?"
@@ -249,7 +251,9 @@ export default function ProductsTable({ initialData, categories }) {
                         okText="Yes"
                         cancelText="No"
                     >
-                        <Button icon={<DeleteOutlined />} danger size="small" type="text">Delete</Button>
+                        <Tooltip title="Delete Product">
+                            <Button icon={<DeleteOutlined />} danger size="small" type="text" />
+                        </Tooltip>
                     </Popconfirm>
                 </Space>
             ),

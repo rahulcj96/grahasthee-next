@@ -12,7 +12,7 @@ export default function DashboardClient({ stats }) {
             <Title level={2} style={{ marginBottom: 24, color: 'inherit' }}>Dashboard</Title>
             <Row gutter={16}>
                 <Col span={8}>
-                    <Card variant="borderless">
+                    <Card>
                         <Statistic
                             title="Total Products"
                             value={stats.productCount}
@@ -22,7 +22,7 @@ export default function DashboardClient({ stats }) {
                     </Card>
                 </Col>
                 <Col span={8}>
-                    <Card variant="borderless">
+                    <Card>
                         <Statistic
                             title="Total Categories"
                             value={stats.categoryCount}
@@ -32,7 +32,7 @@ export default function DashboardClient({ stats }) {
                     </Card>
                 </Col>
                 <Col span={8}>
-                    <Card variant="borderless">
+                    <Card>
                         <Statistic
                             title="Total Orders"
                             value={stats.orderCount}

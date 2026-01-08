@@ -126,24 +126,24 @@ export default function ProductImagesTable({ initialData, products }) {
             render: (_, record) => (
                 <Space size="middle">
                     {!record.is_primary && (
-                        <Button
-                            type="text"
-                            icon={<StarOutlined />}
-                            onClick={() => handleMakePrimary(record.id, record.product_id)}
-                            loading={loading && loadingId === record.id}
-                        >
-                            Make Primary
-                        </Button>
+                        <Tooltip title="Make Primary">
+                            <Button
+                                type="text"
+                                icon={<StarOutlined />}
+                                onClick={() => handleMakePrimary(record.id, record.product_id)}
+                                loading={loading && loadingId === record.id}
+                            />
+                        </Tooltip>
                     )}
                     {record.is_primary && (
-                        <Button
-                            type="text"
-                            icon={<StarFilled />}
-                            disabled
-                            style={{ color: '#faad14' }}
-                        >
-                            Primary
-                        </Button>
+                        <Tooltip title="Primary Image">
+                            <Button
+                                type="text"
+                                icon={<StarFilled />}
+                                disabled
+                                style={{ color: '#faad14' }}
+                            />
+                        </Tooltip>
                     )}
                     <Popconfirm
                         title="Delete this image?"
@@ -152,7 +152,9 @@ export default function ProductImagesTable({ initialData, products }) {
                         okText="Yes"
                         cancelText="No"
                     >
-                        <Button type="text" danger icon={<DeleteOutlined />} loading={loading && loadingId === record.id}>Delete</Button>
+                        <Tooltip title="Delete Image">
+                            <Button type="text" danger icon={<DeleteOutlined />} loading={loading && loadingId === record.id} />
+                        </Tooltip>
                     </Popconfirm>
                 </Space>
             ),

@@ -42,9 +42,9 @@ export default function AdminSidebar({ collapsed, isDarkMode }) {
             label: <Link href="/admin/product-images">Product Images</Link>,
         },
         {
-            key: '/admin/upload',
+            key: '/admin/media',
             icon: <CloudUploadOutlined />,
-            label: <Link href="/admin/upload">Upload</Link>,
+            label: <Link href="/admin/media">Media Gallery</Link>,
         },
     ]
 
