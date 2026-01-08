@@ -26,17 +26,30 @@ async function getProducts() {
     return products.map(p => ({
         ...p,
         category: p.categories?.title || 'Uncategorized',
+        category_id: p.category_id,
         images: p.product_images?.map(img => img.image_url) || []
     }))
 }
 
+async function getCategories() {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+    const { data: categories } = await supabase
+        .from('categories')
+        .select('id, title')
+        .order('title', { ascending: true })
+
+    return categories || []
+}
+
 export default async function AdminProductsPage() {
     const products = await getProducts()
+    const categories = await getCategories()
 
     return (
         <div>
             <PageTitle>Products</PageTitle>
-            <ProductsTable initialData={products} />
+            <ProductsTable initialData={products} categories={categories} />
         </div>
     )
 }

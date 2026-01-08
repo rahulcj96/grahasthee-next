@@ -25,13 +25,25 @@ async function getProductImages() {
     }))
 }
 
+async function getProducts() {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+    const { data: products } = await supabase
+        .from('products')
+        .select('id, title')
+        .order('title', { ascending: true })
+
+    return products || []
+}
+
 export default async function AdminProductImagesPage() {
     const images = await getProductImages()
+    const products = await getProducts()
 
     return (
         <div>
             <PageTitle>Product Images</PageTitle>
-            <ProductImagesTable initialData={images} />
+            <ProductImagesTable initialData={images} products={products} />
         </div>
     )
 }

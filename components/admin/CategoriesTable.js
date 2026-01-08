@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Table, Button, Input, Space, Image, Popconfirm, message } from 'antd'
-import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons'
+import Papa from 'papaparse'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
@@ -13,6 +14,7 @@ export default function CategoriesTable({ initialData }) {
     const [ loading, setLoading ] = useState(false)
     const [ messageApi, contextHolder ] = message.useMessage()
     const router = useRouter()
+    const fileInputRef = useRef(null)
 
     const handleDelete = async (id) => {
         try {
@@ -48,6 +50,58 @@ export default function CategoriesTable({ initialData }) {
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleExportCSV = () => {
+        const csv = Papa.unparse(initialData)
+        const blob = new Blob([ csv ], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', `categories_export_${new Date().toISOString().split('T')[ 0 ]}.csv`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
+    const handleImportCSV = (e) => {
+        const file = e.target.files[ 0 ]
+        if (!file) return
+
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: async (results) => {
+                try {
+                    setLoading(true)
+                    const data = results.data.map(item => ({
+                        title: item.title,
+                        slug: item.slug,
+                        description: item.description || null,
+                        image_url: item.image_url || null,
+                        tagline: item.tagline || null,
+                        ...(item.id ? { id: parseInt(item.id) } : {})
+                    }))
+
+                    const { error } = await supabase
+                        .from('categories')
+                        .upsert(data, { onConflict: 'slug' })
+
+                    if (error) throw error
+
+                    messageApi.success('Categories imported successfully')
+                    router.refresh()
+                } catch (error) {
+                    console.error(error)
+                    messageApi.error('Failed to import categories')
+                } finally {
+                    setLoading(false)
+                    // Reset file input
+                    e.target.value = null
+                }
+            }
+        })
     }
 
     const columns = [
@@ -112,9 +166,26 @@ export default function CategoriesTable({ initialData }) {
                     onChange={e => setSearchText(e.target.value)}
                     style={{ width: 300 }}
                 />
-                <Link href="/admin/categories/create">
-                    <Button type="primary" icon={<PlusOutlined />}>Create Category</Button>
-                </Link>
+                <Space>
+                    <input
+                        type="file"
+                        accept=".csv"
+                        onChange={handleImportCSV}
+                        style={{ display: 'none' }}
+                        ref={fileInputRef}
+                    />
+                    <Button
+                        icon={<ImportOutlined />}
+                        loading={loading}
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        Import
+                    </Button>
+                    <Button icon={<ExportOutlined />} onClick={handleExportCSV}>Export</Button>
+                    <Link href="/admin/categories/create">
+                        <Button type="primary" icon={<PlusOutlined />}>Create Category</Button>
+                    </Link>
+                </Space>
             </div>
             <Table
                 columns={columns}
