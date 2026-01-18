@@ -13,7 +13,7 @@ export default function Categories() {
                                 <Link href="/shop?category=cotton-pillow-covers">
                                     <Image
                                         src="/images/categories/pillow-covers.webp"
-                                        alt="categories"
+                                        alt="Handcrafted Cotton Pillow Covers Collection"
                                         width={1000}
                                         height={1500}
                                         className="product-image img-fluid w-100 h-100"
@@ -30,7 +30,7 @@ export default function Categories() {
                                 <Link href="/shop?category=luxe-linen-bath-towels">
                                     <Image
                                         src="/images/categories/bath-towels.webp"
-                                        alt="categories"
+                                        alt="Luxe Linen Bath Towels Collection"
                                         width={1000}
                                         height={1500}
                                         className="product-image img-fluid w-100 h-100"
@@ -47,7 +47,7 @@ export default function Categories() {
                                 <Link href="/shop?category=cozy-corners">
                                     <Image
                                         src="/images/categories/cozy-corners.webp"
-                                        alt="categories"
+                                        alt="Cozy Corners Home Essentials"
                                         width={1000}
                                         height={1500}
                                         className="product-image img-fluid w-100 h-100"

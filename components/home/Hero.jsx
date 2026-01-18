@@ -16,7 +16,7 @@ export default function Hero({ categories = [] }) {
             <div className="container">
                 <div className="row justify-content-center">
                     <Reveal animation="fade-up">
-                        <h1 className="section-title text-center mt-4">
+                        <h1 className="section-title text-center mt-4" style={{ textWrap: 'balance' }}>
                             Fresh Finds for Your Home
                         </h1>
                     </Reveal>
@@ -48,7 +48,7 @@ export default function Hero({ categories = [] }) {
                             768: { slidesPerView: 2 },
                         }}
                     >
-                        {categories.map((category) => (
+                        {categories.map((category, index) => (
                             <SwiperSlide key={category.id}>
                                 <div className="banner-item image-zoom-effect">
                                     <Link href={`/shop?category=${category.slug}`} className="item-anchor">
@@ -60,6 +60,7 @@ export default function Hero({ categories = [] }) {
                                                 height={580}
                                                 className="img-fluid"
                                                 style={{ objectFit: 'cover' }}
+                                                priority={index < 2}
                                             />
                                         </div>
                                     </Link>
