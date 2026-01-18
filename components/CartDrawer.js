@@ -36,7 +36,8 @@ export default function CartDrawer() {
                     visibility: isCartOpen ? 'visible' : 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
-                    zIndex: 1050
+                    zIndex: 1050,
+                    overscrollBehavior: 'contain'
                 }}
                 tabIndex="-1"
                 id="cartDrawer"
@@ -47,7 +48,7 @@ export default function CartDrawer() {
                         type="button"
                         className="btn-close shadow-none"
                         onClick={() => setIsCartOpen(false)}
-                        aria-label="Close"
+                        aria-label="Close cart"
                     ></button>
                 </div>
 
@@ -81,6 +82,7 @@ export default function CartDrawer() {
                                                 className="btn-close small shadow-none"
                                                 style={{ fontSize: '0.7rem' }}
                                                 onClick={() => removeFromCart(item.id)}
+                                                aria-label={`Remove ${item.title} from cart`}
                                             ></button>
                                         </div>
                                         <div className="text-muted small mb-2">₹{parseFloat(item.price).toLocaleString()}</div>
@@ -89,11 +91,13 @@ export default function CartDrawer() {
                                                 <button
                                                     className="btn btn-sm btn-link text-dark p-0 px-2 shadow-none"
                                                     onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                                                    aria-label="Decrease quantity"
                                                 >-</button>
                                                 <span className="small px-2">{item.quantity}</span>
                                                 <button
                                                     className="btn btn-sm btn-link text-dark p-0 px-2 shadow-none"
                                                     onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                                                    aria-label="Increase quantity"
                                                 >+</button>
                                             </div>
                                             <div className="fw-bold small">₹{(item.price * item.quantity).toLocaleString()}</div>

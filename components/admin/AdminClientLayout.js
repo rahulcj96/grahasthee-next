@@ -56,6 +56,7 @@ export default function AdminClientLayout({ children }) {
                                 height: 64,
                                 color: isDarkMode ? '#fff' : 'inherit'
                             }}
+                            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                         />
                         <div style={{ flex: 1, marginLeft: 16 }}>
                             <Breadcrumb items={[ { title: 'Admin', href: '/admin' }, ...breadcrumbItems.filter(item => item.title !== 'Admin') ]} />
@@ -65,12 +66,14 @@ export default function AdminClientLayout({ children }) {
                             onClick={() => setIsDarkMode(!isDarkMode)}
                             shape="circle"
                             style={{ marginRight: 8 }}
+                            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
                         />
                         <Button
                             icon={<LogoutOutlined />}
                             onClick={() => logoutAdmin()}
                             shape="circle"
                             danger
+                            aria-label="Logout"
                         />
                     </Header>
                     <Content style={{ margin: '16px 16px' }}>

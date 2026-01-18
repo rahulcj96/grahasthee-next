@@ -45,7 +45,6 @@ export default function ProductCard({ product }) {
                                 height={500}
                                 className="w-100 h-100"
                                 style={{ objectFit: 'cover' }}
-                                priority
                             />
                         </div>
                     </Link>
@@ -58,6 +57,7 @@ export default function ProductCard({ product }) {
                                 toggleWishlist(product);
                             }}
                             title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                            aria-label={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24">
                                 <use xlinkHref={isInWishlist ? "#heart-solid" : "#heart"}></use>
@@ -75,6 +75,7 @@ export default function ProductCard({ product }) {
                                 }
                             }}
                             title={isInCart ? "Remove from Cart" : "Add to Cart"}
+                            aria-label={isInCart ? "Remove from Cart" : "Add to Cart"}
                         >
                             <span className="d-none d-md-inline">{isInCart ? 'In Cart' : 'Add to Cart'}</span>
                             <svg width="18" height="18" viewBox="0 0 24 24" className="d-md-none">
@@ -84,6 +85,7 @@ export default function ProductCard({ product }) {
                         <Link
                             href={`/product/${slug}`}
                             className="btn btn-outline-dark btn-sm shadow-sm"
+                            aria-label="View Product Details"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24">
                                 <use xlinkHref="#search"></use>

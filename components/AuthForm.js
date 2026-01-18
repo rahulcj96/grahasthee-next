@@ -117,6 +117,7 @@ export default function AuthForm() {
                             onChange={(e) => setFullName(e.target.value)}
                             required={!isLogin}
                             placeholder="John Doe"
+                            autoComplete="name"
                         />
                     </div>
                 )}
@@ -130,6 +131,7 @@ export default function AuthForm() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         placeholder="email@example.com"
+                        autoComplete="email"
                     />
                 </div>
 
@@ -143,6 +145,7 @@ export default function AuthForm() {
                             onChange={(e) => setPassword(e.target.value)}
                             required={!useMagicLink}
                             placeholder="••••••••"
+                            autoComplete={isLogin ? "current-password" : "new-password"}
                         />
                     </div>
                 )}
@@ -152,7 +155,7 @@ export default function AuthForm() {
                     className="btn btn-dark w-100 py-3 text-uppercase fw-bold mb-3 shadow-sm"
                     disabled={loading}
                 >
-                    {loading ? 'Processing...' : (useMagicLink ? 'Send Magic Link' : (isLogin ? 'Login' : 'Create Account'))}
+                    {loading ? 'Processing…' : (useMagicLink ? 'Send Magic Link' : (isLogin ? 'Login' : 'Create Account'))}
                 </button>
 
                 {isLogin && (

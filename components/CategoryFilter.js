@@ -23,6 +23,7 @@ export default function CategoryFilter({ categories }) {
             className="form-select form-select-sm d-inline-block w-auto"
             value={currentCategory}
             onChange={handleChange}
+            aria-label="Filter by category"
         >
             <option value="">All Products</option>
             {categories.map(category => (

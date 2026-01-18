@@ -99,8 +99,10 @@ export default async function ShopPage({ searchParams }) {
     const inStock = params?.inStock;
     const page = parseInt(params?.page) || 1;
 
-    const { products, totalCount } = await getProducts(category, sort, inStock, page);
-    const categories = await getCategories();
+    const [ { products, totalCount }, categories ] = await Promise.all([
+        getProducts(category, sort, inStock, page),
+        getCategories()
+    ]);
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
     return (

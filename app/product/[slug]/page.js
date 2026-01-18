@@ -99,7 +99,7 @@ export default async function ProductDetailPage({ params }) {
 
                             <Reveal className="col-md-6 mb-5" animation="fade-left">
                                 <div className="product-info ps-md-4">
-                                    <h1 className="product-title text-uppercase mb-3 fw-bold" style={{ fontSize: '2.5rem' }}>{title}</h1>
+                                    <h1 className="product-title text-uppercase mb-3 fw-bold" style={{ fontSize: '2.5rem', textWrap: 'balance' }}>{title}</h1>
                                     <div className="product-price mb-4">
                                         <span className="current-price h3 fw-bold">₹{parseFloat(price).toLocaleString()}</span>
                                         {compare_at_price && (
@@ -116,8 +116,8 @@ export default async function ProductDetailPage({ params }) {
                                         )}
                                     </div>
 
-                                    <div className="product-rating mb-4 d-flex align-items-center">
-                                        <div className="stars d-flex text-warning">
+                                    <div className="product-rating mb-4 d-flex align-items-center" aria-label={`Rating: ${avgRating} out of 5 stars`}>
+                                        <div className="stars d-flex text-warning" aria-hidden="true">
                                             {[ ...Array(5) ].map((_, i) => (
                                                 <svg key={i} width="20" height="20" viewBox="0 0 15 15" className="me-1">
                                                     <use xlinkHref={i < Math.floor(avgRating) ? "#star-solid" : "#star-outline"}></use>
@@ -160,7 +160,7 @@ export default async function ProductDetailPage({ params }) {
                 <Suspense fallback={
                     <div className="container py-5 text-center">
                         <div className="spinner-border text-dark" role="status">
-                            <span className="visually-hidden">Loading...</span>
+                            <span className="visually-hidden">Loading…</span>
                         </div>
                     </div>
                 }>

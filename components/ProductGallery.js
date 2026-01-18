@@ -35,6 +35,14 @@ export default function ProductGallery({ images, productTitle }) {
                         className={`thumb-item image-zoom-effect cursor-pointer border rounded overflow-hidden ${selectedImage.id === img.id ? 'border-primary border-2' : ''}`}
                         style={{ width: '80px', height: '80px', flexShrink: 0, position: 'relative' }}
                         onClick={() => setSelectedImage(img)}
+                        role="button"
+                        tabIndex="0"
+                        aria-label={`View image: ${img.alt_text || productTitle}`}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                setSelectedImage(img);
+                            }
+                        }}
                     >
                         <Image
                             src={resolveImageUrl(img.image_url)}

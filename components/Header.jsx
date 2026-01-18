@@ -48,7 +48,7 @@ export default function Header() {
 
                         <div className="col-auto d-flex align-items-center gap-3 order-lg-3">
                             <div className="header-actions d-flex align-items-center gap-3">
-                                <Link href="/wishlist" className="nav-link position-relative p-0">
+                                <Link href="/wishlist" className="nav-link position-relative p-0" aria-label="View Wishlist">
                                     <svg width="24" height="24" viewBox="0 0 24 24">
                                         <use xlinkHref="#heart"></use>
                                     </svg>
@@ -62,6 +62,7 @@ export default function Header() {
                                 <button
                                     className="btn p-0 position-relative border-0"
                                     onClick={() => setIsCartOpen(true)}
+                                    aria-label="Open Cart"
                                 >
                                     <svg width="24" height="24" viewBox="0 0 24 24">
                                         <use xlinkHref="#cart"></use>
@@ -107,7 +108,8 @@ export default function Header() {
                 className={`offcanvas offcanvas-end ${isMenuOpen ? 'show' : ''}`}
                 style={{
                     visibility: isMenuOpen ? 'visible' : 'hidden',
-                    display: 'block'
+                    display: 'block',
+                    overscrollBehavior: 'contain'
                 }}
                 tabIndex="-1"
                 id="offcanvasNavbar"
@@ -118,7 +120,7 @@ export default function Header() {
                         type="button"
                         className="btn-close text-reset shadow-none"
                         onClick={() => setIsMenuOpen(false)}
-                        aria-label="Close"
+                        aria-label="Close menu"
                     ></button>
                 </div>
 
