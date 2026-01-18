@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Upload, Card, message, Select, Space, Row, Col } from 'antd';
 import { UploadOutlined, SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { storageService } from '@/services/admin/storageService'
+import { productImageService } from '@/services/admin/productImageService'
 import Link from 'next/link';
 import PageTitle from '@/components/admin/PageTitle';
 
@@ -31,25 +32,13 @@ export default function ProductImageForm({ categories = [], products = [] }) {
     const handleUpload = async ({ file, onSuccess, onError }) => {
         try {
             setUploading(true);
-            const fileExt = file.name.split('.').pop();
-            const fileName = `product-${Math.random().toString(36).substring(2)}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('product-images')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data } = supabase.storage
-                .from('product-images')
-                .getPublicUrl(filePath);
+            const url = await storageService.uploadImage('product-images', file)
 
             const newFile = {
                 uid: file.uid,
-                name: fileName,
+                name: file.name,
                 status: 'done',
-                url: data.publicUrl
+                url: url
             };
 
             setFileList((prev) => [ ...prev, newFile ]);
@@ -78,37 +67,7 @@ export default function ProductImageForm({ categories = [], products = [] }) {
         setLoading(true);
         try {
             const productId = values.product_id;
-
-            // 1. Check if product already has images and get the count
-            const { data: existingImages, error: fetchError } = await supabase
-                .from('product_images')
-                .select('*')
-                .eq('product_id', productId)
-                .order('display_order', { ascending: true });
-
-            if (fetchError) throw fetchError;
-
-            const hasExistingImages = existingImages && existingImages.length > 0;
-            const hasPrimaryImage = existingImages?.some(img => img.is_primary);
-            const startingDisplayOrder = existingImages?.length || 0;
-
-            // 2. Prepare image inserts
-            const imageInserts = fileList.map((file, index) => ({
-                product_id: productId,
-                image_url: file.url,
-                // First image is primary only if product doesn't have a primary image
-                is_primary: !hasPrimaryImage && index === 0,
-                // Continue display order from existing images
-                display_order: startingDisplayOrder + index,
-                alt_text: products.find(p => p.id === productId)?.title || 'Product Image'
-            }));
-
-            // 3. Insert all images
-            const { error: insertError } = await supabase
-                .from('product_images')
-                .insert(imageInserts);
-
-            if (insertError) throw insertError;
+            await productImageService.addProductImages(productId, fileList, products)
 
             message.success(`${fileList.length} image(s) added successfully`);
             router.push('/admin/product-images');

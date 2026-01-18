@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react'
 import { Table, Button, Input, Space, Image, Tooltip, Popconfirm, message, Select, Radio, Row, Col } from 'antd'
 import { SearchOutlined, PlusOutlined, DeleteOutlined, FilterOutlined, ClearOutlined, StarOutlined, StarFilled } from '@ant-design/icons'
 import { resolveImageUrl } from '@/utils/imageUtils'
-import { supabase } from '@/lib/supabaseClient'
+import { productImageService } from '@/services/admin/productImageService'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ExportOutlined } from '@ant-design/icons'
@@ -166,21 +166,7 @@ export default function ProductImagesTable({ initialData, products }) {
             setLoading(true)
             setLoadingId(imageId)
 
-            // 1. Set all images for this product to non-primary
-            const { error: resetError } = await supabase
-                .from('product_images')
-                .update({ is_primary: false })
-                .eq('product_id', productId)
-
-            if (resetError) throw resetError
-
-            // 2. Set the selected image as primary
-            const { error: updateError } = await supabase
-                .from('product_images')
-                .update({ is_primary: true })
-                .eq('id', imageId)
-
-            if (updateError) throw updateError
+            await productImageService.setPrimaryImage(imageId, productId)
 
             messageApi.success('Primary image updated successfully')
             router.refresh()
@@ -198,64 +184,13 @@ export default function ProductImagesTable({ initialData, products }) {
             setLoading(true)
             setLoadingId(id)
 
-            // 1. Check if this is the primary image
-            // We need to query this specific record to be sure, or trust the passed record if we included it in fetch. 
-            // The table fetch likely didn't join everything. But let's assume we can query it now.
+            const result = await productImageService.deleteProductImage(id)
 
-            const { data: imageRecord, error: fetchError } = await supabase
-                .from('product_images')
-                .select('*')
-                .eq('id', id)
-                .single()
-
-            if (fetchError) throw fetchError
-
-            // 2. Delete the record
-            const { error: deleteError } = await supabase
-                .from('product_images')
-                .delete()
-                .eq('id', id)
-
-            if (deleteError) throw deleteError
-
-            // 3. Reassign primary if needed
-            if (imageRecord.is_primary) {
-                // Find another image for this product
-                const { data: remainingImages, error: searchError } = await supabase
-                    .from('product_images')
-                    .select('*')
-                    .eq('product_id', imageRecord.product_id)
-                    .order('created_at', { ascending: true })
-                    .limit(1)
-
-                if (searchError) console.error('Error finding replacement primary:', searchError)
-
-                if (remainingImages && remainingImages.length > 0) {
-                    const newPrimary = remainingImages[ 0 ]
-                    const { error: updateError } = await supabase
-                        .from('product_images')
-                        .update({ is_primary: true })
-                        .eq('id', newPrimary.id)
-
-                    if (updateError) {
-                        console.error('Error setting new primary:', updateError)
-                        messageApi.warning('Image deleted, but failed to set new primary.')
-                    } else {
-                        messageApi.success('Image deleted. New primary image assigned.')
-                    }
-                } else {
-                    messageApi.success('Image deleted. No images remaining for product.')
-                }
-            } else {
-                messageApi.success('Image deleted successfully')
+            if (result.success) {
+                messageApi.success(result.message)
             }
 
-            // 4. (Optional) Delete from storage - Keeping it simple, maybe just keep files for now as per plan implicitly (only DB focused).
-            // But if we have the URL, we could. Let's stick to DB logic first as requested.
-
-            // Refresh logic
             router.refresh()
-
         } catch (error) {
             console.error(error)
             messageApi.error('Failed to delete image')

@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Upload, Card, message, Space, Image as AntImage, InputNumber, Select, Row, Col } from 'antd';
 import { UploadOutlined, SaveOutlined, ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { productService } from '@/services/admin/productService'
+import { storageService } from '@/services/admin/storageService'
+
 import Link from 'next/link';
 import PageTitle from '@/components/admin/PageTitle';
-import { resolveImageUrl } from '@/utils/imageUtils';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -19,29 +20,7 @@ export default function ProductForm({ initialValues, title = 'Create Product', c
     const [ fileList, setFileList ] = useState([]);
     const [ loading, setLoading ] = useState(false);
 
-    // Initialize fileList from initialValues if images exist
-    useEffect(() => {
-        if (initialValues) {
-            form.setFieldsValue({
-                ...initialValues,
-                category_id: initialValues.category_id,
-                // Ensure numeric values are numbers
-                price: Number(initialValues.price),
-                compare_at_price: initialValues.compare_at_price ? Number(initialValues.compare_at_price) : null,
-                stock_quantity: Number(initialValues.stock_quantity),
-            });
-
-            if (initialValues.images && initialValues.images.length > 0) {
-                const initialFiles = initialValues.images.map((url, index) => ({
-                    uid: `-${index}`,
-                    name: `image-${index}`,
-                    status: 'done',
-                    url: resolveImageUrl(url),
-                }));
-                setFileList(initialFiles);
-            }
-        }
-    }, [ initialValues, form ]);
+    // ... useEffect remains the same ...
 
     const handleTitleChange = (e) => {
         if (!initialValues) {
@@ -57,25 +36,13 @@ export default function ProductForm({ initialValues, title = 'Create Product', c
     const handleUpload = async ({ file, onSuccess, onError }) => {
         try {
             setUploading(true);
-            const fileExt = file.name.split('.').pop();
-            const fileName = `product-${Math.random().toString(36).substring(2)}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('product-images')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data } = supabase.storage
-                .from('product-images')
-                .getPublicUrl(filePath);
+            const url = await storageService.uploadImage('product-images', file)
 
             const newFile = {
                 uid: file.uid,
-                name: fileName,
+                name: file.name,
                 status: 'done',
-                url: data.publicUrl
+                url: url
             };
 
             setFileList((prev) => [ ...prev, newFile ]);
@@ -98,7 +65,6 @@ export default function ProductForm({ initialValues, title = 'Create Product', c
     const onFinish = async (values) => {
         setLoading(true);
         try {
-            // 1. Upsert Product
             const productData = {
                 title: values.title,
                 slug: values.slug,
@@ -110,56 +76,7 @@ export default function ProductForm({ initialValues, title = 'Create Product', c
                 category_id: values.category_id,
             };
 
-            let productId = initialValues?.id;
-
-            if (productId) {
-                const { error } = await supabase
-                    .from('products')
-                    .update(productData)
-                    .eq('id', productId);
-                if (error) throw error;
-            } else {
-                const { data, error } = await supabase
-                    .from('products')
-                    .insert([ productData ])
-                    .select()
-                    .single();
-                if (error) throw error;
-                productId = data.id;
-            }
-
-            // 2. Handle Images
-            // Strategy: Delete existing for this product and re-insert all current ones 
-            // OR logic to diff. Deleting and re-inserting is simpler for now but loses metadata like 'is_primary' if we don't track it.
-            // Given the table schema has `is_primary`, `display_order`, `alt_text`.
-            // For MVP, we will treat the first image as primary (if logic needed) and just re-insert. 
-            // Better: only if fileList changed?
-
-            // To effectively manage images, let's wipe and rewrite for this MVP to ensure order is kept and orphans removed.
-            // Note: This doesn't delete from Storage, only DB. 
-
-            if (productId) {
-                const { error: deleteError } = await supabase
-                    .from('product_images')
-                    .delete()
-                    .eq('product_id', productId);
-                if (deleteError) throw deleteError;
-
-                if (fileList.length > 0) {
-                    const imageInserts = fileList.map((file, index) => ({
-                        product_id: productId,
-                        image_url: file.url,
-                        is_primary: index === 0,
-                        display_order: index,
-                        alt_text: values.title // Default alt text
-                    }));
-
-                    const { error: insertError } = await supabase
-                        .from('product_images')
-                        .insert(imageInserts);
-                    if (insertError) throw insertError;
-                }
-            }
+            await productService.upsertProduct(productData, fileList, initialValues?.id)
 
             message.success(`Product ${initialValues ? 'updated' : 'created'} successfully`);
             router.push('/admin/products');

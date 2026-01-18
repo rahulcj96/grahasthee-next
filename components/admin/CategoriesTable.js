@@ -4,8 +4,8 @@ import React, { useState, useRef } from 'react'
 import { Table, Button, Input, Space, Image, Popconfirm, message, Tooltip } from 'antd'
 import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons'
 import { CSVHelper } from '@/utils/csvHelper'
+import { categoryService } from '@/services/admin/categoryService'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { resolveImageUrl } from '@/utils/imageUtils'
 
@@ -21,26 +21,12 @@ export default function CategoriesTable({ initialData }) {
             setLoading(true)
             console.log('Attempting to delete category:', id)
 
-            // Check for existing products
-            const { count, error: countError } = await supabase
-                .from('products')
-                .select('*', { count: 'exact', head: true })
-                .eq('category_id', id)
+            const result = await categoryService.deleteCategory(id)
 
-            if (countError) throw countError
-            console.log('Product count for category:', count)
-
-            if (count > 0) {
-                messageApi.warning(`Cannot delete category. It has ${count} products associated with it.`)
+            if (!result.success) {
+                messageApi.warning(result.error)
                 return
             }
-
-            const { error } = await supabase
-                .from('categories')
-                .delete()
-                .eq('id', id)
-
-            if (error) throw error
 
             messageApi.success('Category deleted successfully')
             router.refresh()
@@ -61,20 +47,7 @@ export default function CategoriesTable({ initialData }) {
         CSVHelper.importFromCSV(file, async (results) => {
             try {
                 setLoading(true)
-                const data = results.data.map(item => ({
-                    title: item.title,
-                    slug: item.slug,
-                    description: item.description || null,
-                    image_url: item.image_url || null,
-                    tagline: item.tagline || null,
-                    ...(item.id ? { id: parseInt(item.id) } : {})
-                }))
-
-                const { error } = await supabase
-                    .from('categories')
-                    .upsert(data, { onConflict: 'slug' })
-
-                if (error) throw error
+                await categoryService.importCategories(results.data)
 
                 messageApi.success('Categories imported successfully')
                 router.refresh()

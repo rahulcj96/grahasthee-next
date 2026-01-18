@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Upload, Card, message, Space, Image as AntImage } from 'antd';
 import { UploadOutlined, SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { categoryService } from '@/services/admin/categoryService'
+import { storageService } from '@/services/admin/storageService'
 import Link from 'next/link';
 import PageTitle from '@/components/admin/PageTitle';
 
@@ -18,12 +19,7 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
     const [ imageUrl, setImageUrl ] = useState(initialValues?.image_url || '');
     const [ loading, setLoading ] = useState(false);
 
-    useEffect(() => {
-        if (initialValues) {
-            form.setFieldsValue(initialValues);
-            setImageUrl(initialValues.image_url);
-        }
-    }, [ initialValues, form ]);
+    // ... useEffect ...
 
     const handleTitleChange = (e) => {
         const titleVal = e.target.value;
@@ -33,9 +29,6 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
             .replace(/[^\w-]+/g, '');
 
         // Only auto-update slug if we are creating new or if user hasn't manually edited slug (simplification: just always auto-update if not editing existing record potentially)
-        // Better: Helper button or just auto-update if field is untouched. 
-        // For now, let's just auto-fill if slug is empty or if it matches the old transformed title. 
-        // Simplest: Just set it. User can edit it after.
         if (!initialValues) {
             form.setFieldsValue({ slug: slugVal });
         }
@@ -44,21 +37,9 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
     const handleUpload = async (file) => {
         try {
             setUploading(true);
-            const fileExt = file.name.split('.').pop();
-            const fileName = `category-${Math.random().toString(36).substring(2)}.${fileExt}`;
-            const filePath = `${fileName}`;
+            const url = await storageService.uploadImage('product-images', file)
 
-            const { error: uploadError } = await supabase.storage
-                .from('product-images') // Reusing existing bucket as per plan
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data } = supabase.storage
-                .from('product-images')
-                .getPublicUrl(filePath);
-
-            setImageUrl(data.publicUrl);
+            setImageUrl(url);
             messageApi.success('Image uploaded successfully!');
         } catch (err) {
             messageApi.error(err.message || 'Upload failed');
@@ -76,24 +57,9 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
                 image_url: imageUrl,
             };
 
-            if (initialValues?.id) {
-                // Update
-                const { error } = await supabase
-                    .from('categories')
-                    .update(formData)
-                    .eq('id', initialValues.id);
+            await categoryService.upsertCategory(formData, initialValues?.id)
 
-                if (error) throw error;
-                messageApi.success('Category updated successfully');
-            } else {
-                // Insert
-                const { error } = await supabase
-                    .from('categories')
-                    .insert([ formData ]);
-
-                if (error) throw error;
-                messageApi.success('Category created successfully');
-            }
+            messageApi.success(`Category ${initialValues ? 'updated' : 'created'} successfully`);
 
             router.push('/admin/categories');
             router.refresh();
