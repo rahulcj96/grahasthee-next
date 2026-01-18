@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react'
 import { Table, Button, Input, Space, Image, Popconfirm, message, Tooltip } from 'antd'
 import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined } from '@ant-design/icons'
-import Papa from 'papaparse'
+import { CSVHelper } from '@/utils/csvHelper'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
@@ -53,53 +53,38 @@ export default function CategoriesTable({ initialData }) {
     }
 
     const handleExportCSV = () => {
-        const csv = Papa.unparse(initialData)
-        const blob = new Blob([ csv ], { type: 'text/csv;charset=utf-8;' })
-        const link = document.createElement('a')
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', `categories_export_${new Date().toISOString().split('T')[ 0 ]}.csv`)
-        link.style.visibility = 'hidden'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        CSVHelper.exportToCSV(initialData, 'categories_export')
     }
 
     const handleImportCSV = (e) => {
         const file = e.target.files[ 0 ]
-        if (!file) return
+        CSVHelper.importFromCSV(file, async (results) => {
+            try {
+                setLoading(true)
+                const data = results.data.map(item => ({
+                    title: item.title,
+                    slug: item.slug,
+                    description: item.description || null,
+                    image_url: item.image_url || null,
+                    tagline: item.tagline || null,
+                    ...(item.id ? { id: parseInt(item.id) } : {})
+                }))
 
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: async (results) => {
-                try {
-                    setLoading(true)
-                    const data = results.data.map(item => ({
-                        title: item.title,
-                        slug: item.slug,
-                        description: item.description || null,
-                        image_url: item.image_url || null,
-                        tagline: item.tagline || null,
-                        ...(item.id ? { id: parseInt(item.id) } : {})
-                    }))
+                const { error } = await supabase
+                    .from('categories')
+                    .upsert(data, { onConflict: 'slug' })
 
-                    const { error } = await supabase
-                        .from('categories')
-                        .upsert(data, { onConflict: 'slug' })
+                if (error) throw error
 
-                    if (error) throw error
-
-                    messageApi.success('Categories imported successfully')
-                    router.refresh()
-                } catch (error) {
-                    console.error(error)
-                    messageApi.error('Failed to import categories')
-                } finally {
-                    setLoading(false)
-                    // Reset file input
-                    e.target.value = null
-                }
+                messageApi.success('Categories imported successfully')
+                router.refresh()
+            } catch (error) {
+                console.error(error)
+                messageApi.error('Failed to import categories')
+            } finally {
+                setLoading(false)
+                // Reset file input
+                e.target.value = null
             }
         })
     }

@@ -7,7 +7,7 @@ import { resolveImageUrl } from '@/utils/imageUtils'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
-import Papa from 'papaparse'
+import { CSVHelper } from '@/utils/csvHelper'
 
 export default function ProductsTable({ initialData, categories }) {
     const [ searchText, setSearchText ] = useState('')
@@ -85,60 +85,85 @@ export default function ProductsTable({ initialData, categories }) {
             description: p.description,
             is_new_arrival: p.is_new_arrival,
             is_best_seller: p.is_best_seller,
-            created_at: p.created_at
+            created_at: p.created_at,
+            images: p.images ? p.images.join(',') : ''
         }))
 
-        const csv = Papa.unparse(exportData)
-        const blob = new Blob([ csv ], { type: 'text/csv;charset=utf-8;' })
-        const link = document.createElement('a')
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', `products_export_${new Date().toISOString().split('T')[ 0 ]}.csv`)
-        link.style.visibility = 'hidden'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        CSVHelper.exportToCSV(exportData, 'products_export')
     }
 
     const handleImportCSV = (e) => {
         const file = e.target.files[ 0 ]
-        if (!file) return
+        CSVHelper.importFromCSV(file, async (results) => {
+            try {
+                setLoading(true)
+                const data = results.data.map(item => ({
+                    title: item.title,
+                    slug: item.slug,
+                    sku: item.sku,
+                    price: parseFloat(item.price) || 0,
+                    compare_at_price: item.compare_at_price ? parseFloat(item.compare_at_price) : null,
+                    stock_quantity: parseInt(item.stock_quantity) || 0,
+                    category_id: item.category_id ? parseInt(item.category_id) : null,
+                    description: item.description || null,
+                    is_new_arrival: item.is_new_arrival === 'true' || item.is_new_arrival === '1',
+                    is_best_seller: item.is_best_seller === 'true' || item.is_best_seller === '1',
+                    ...(item.id ? { id: parseInt(item.id) } : {})
+                }))
 
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: async (results) => {
-                try {
-                    setLoading(true)
-                    const data = results.data.map(item => ({
-                        title: item.title,
-                        slug: item.slug,
-                        sku: item.sku,
-                        price: parseFloat(item.price) || 0,
-                        compare_at_price: item.compare_at_price ? parseFloat(item.compare_at_price) : null,
-                        stock_quantity: parseInt(item.stock_quantity) || 0,
-                        category_id: item.category_id ? parseInt(item.category_id) : null,
-                        description: item.description || null,
-                        is_new_arrival: item.is_new_arrival === 'true' || item.is_new_arrival === '1',
-                        is_best_seller: item.is_best_seller === 'true' || item.is_best_seller === '1',
-                        ...(item.id ? { id: parseInt(item.id) } : {})
-                    }))
+                // Process upserts sequentially to handle images correcty after each product
+                for (let i = 0; i < data.length; i++) {
+                    const product = data[ i ]
+                    const imagesString = results.data[ i ].images
 
-                    const { error } = await supabase
+                    const { data: upsertedProduct, error: productError } = await supabase
                         .from('products')
-                        .upsert(data, { onConflict: 'sku' })
+                        .upsert(product, { onConflict: 'sku' })
+                        .select()
+                        .single()
 
-                    if (error) throw error
+                    if (productError) throw productError
 
-                    messageApi.success('Products imported successfully')
-                    router.refresh()
-                } catch (error) {
-                    console.error(error)
-                    messageApi.error('Failed to import products')
-                } finally {
-                    setLoading(false)
-                    e.target.value = null
+                    // Handle Images if provided
+                    if (imagesString && upsertedProduct) {
+                        // Parse URLs
+                        const imageUrls = imagesString.split(',').map(url => url.trim()).filter(url => url)
+
+                        if (imageUrls.length > 0) {
+                            // Delete existing images 
+                            const { error: deleteError } = await supabase
+                                .from('product_images')
+                                .delete()
+                                .eq('product_id', upsertedProduct.id)
+
+                            if (deleteError) throw deleteError
+
+                            // Insert new images
+                            const imageInserts = imageUrls.map((url, index) => ({
+                                product_id: upsertedProduct.id,
+                                image_url: url,
+                                is_primary: index === 0, // First image is primary
+                                display_order: index,
+                                alt_text: upsertedProduct.title
+                            }))
+
+                            const { error: insertError } = await supabase
+                                .from('product_images')
+                                .insert(imageInserts)
+
+                            if (insertError) throw insertError
+                        }
+                    }
                 }
+
+                messageApi.success('Products imported successfully')
+                router.refresh()
+            } catch (error) {
+                console.error(error)
+                messageApi.error('Failed to import products: ' + error.message)
+            } finally {
+                setLoading(false)
+                e.target.value = null
             }
         })
     }
