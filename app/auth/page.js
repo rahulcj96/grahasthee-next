@@ -13,7 +13,7 @@ export default function AuthPage() {
                         <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                             <Reveal animation="fade-up">
                                 <div className="text-center mb-5">
-                                    <h1 className="display-5 text-uppercase fw-bold mb-2">Welcome</h1>
+                                    <h1 className="display-5 text-uppercase fw-bold mb-2" style={{ textWrap: 'balance' }}>Welcome</h1>
                                     <p className="text-muted">Join the Grahasthee community today</p>
                                 </div>
                                 <AuthForm />

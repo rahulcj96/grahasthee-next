@@ -23,6 +23,7 @@ export default function SortFilter() {
             className="form-select form-select-sm d-inline-block w-auto"
             value={currentSort}
             onChange={handleChange}
+            aria-label="Sort products"
         >
             <option value="featured">Featured</option>
             <option value="newest">Newest</option>

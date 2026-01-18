@@ -35,7 +35,7 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
                                 fontSize: '0.9rem',
                                 letterSpacing: '1px',
                                 borderBottom: currentActiveTab === tab.id ? '2px solid #000' : 'none',
-                                transition: 'all 0.3s ease'
+                                transition: 'color 0.3s ease, border-bottom-color 0.3s ease'
                             }}
                         >
                             {tab.label}
@@ -50,7 +50,7 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
                     <div className="tab-pane fade show active">
                         <div className="row">
                             <div className="col-md-8">
-                                <h4 className="mb-4 text-uppercase fw-bold" style={{ fontSize: '1.2rem' }}>Technical Details</h4>
+                                <h4 className="mb-4 text-uppercase fw-bold" style={{ fontSize: '1.2rem', textWrap: 'balance' }}>Technical Details</h4>
                                 <table className="table table-borderless">
                                     <tbody>
                                         {Object.entries(additionalInfo).map(([ key, value ]) => (
@@ -71,7 +71,7 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
                     <div className="tab-pane fade show active">
                         <div className="row">
                             <div className="col-md-8">
-                                <h4 className="mb-4 text-uppercase fw-bold" style={{ fontSize: '1.2rem' }}>Frequently Asked Questions</h4>
+                                <h4 className="mb-4 text-uppercase fw-bold" style={{ fontSize: '1.2rem', textWrap: 'balance' }}>Frequently Asked Questions</h4>
                                 <div className="accordion accordion-flush" id="faqAccordion">
                                     {faq.map((item, index) => (
                                         <div className="accordion-item border-bottom py-2" key={index} style={{ backgroundColor: 'transparent' }}>
@@ -107,7 +107,7 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
                         <div className="row">
                             <div className="col-md-10">
                                 <div className="d-flex align-items-center justify-content-between mb-5">
-                                    <h4 className="text-uppercase fw-bold m-0" style={{ fontSize: '1.2rem' }}>Customer Reviews</h4>
+                                    <h4 className="text-uppercase fw-bold m-0" style={{ fontSize: '1.2rem', textWrap: 'balance' }}>Customer Reviews</h4>
                                 </div>
 
                                 {reviews && reviews.length > 0 ? (
@@ -117,9 +117,9 @@ export default function ProductTabs({ description, additionalInfo, faq, reviews 
                                                 <div className="d-flex justify-content-between align-items-start mb-2">
                                                     <div>
                                                         <h6 className="mb-1 fw-bold">{review.user_name}</h6>
-                                                        <div className="stars d-flex text-warning mb-2" style={{ fontSize: '0.8rem' }}>
+                                                        <div className="stars d-flex text-warning mb-2" style={{ fontSize: '0.8rem' }} aria-label={`Rating: ${review.rating} out of 5 stars`}>
                                                             {[ ...Array(5) ].map((_, i) => (
-                                                                <svg key={i} width="14" height="14" viewBox="0 0 15 15" className="me-1">
+                                                                <svg key={i} width="14" height="14" viewBox="0 0 15 15" className="me-1" aria-hidden="true">
                                                                     <use xlinkHref={i < review.rating ? "#star-solid" : "#star-outline"}></use>
                                                                 </svg>
                                                             ))}

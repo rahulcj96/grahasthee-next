@@ -35,6 +35,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      {/* suppressHydrationWarning is used on body to allow for browser extensions (like dark mode or translation) to modify the DOM without triggering hydration errors */}
       <body className={`${jost.variable} ${marcellus.variable}`} suppressHydrationWarning>
         <BootstrapClient />
         <SvgIcons />

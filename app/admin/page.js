@@ -10,17 +10,15 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 async function getStats() {
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-    const { count: productCount } = await supabase
-        .from('products')
-        .select('*', { count: 'exact', head: true })
-
-    const { count: categoryCount } = await supabase
-        .from('categories')
-        .select('*', { count: 'exact', head: true })
-
-    const { count: orderCount } = await supabase
-        .from('orders')
-        .select('*', { count: 'exact', head: true })
+    const [
+        { count: productCount },
+        { count: categoryCount },
+        { count: orderCount }
+    ] = await Promise.all([
+        supabase.from('products').select('*', { count: 'exact', head: true }),
+        supabase.from('categories').select('*', { count: 'exact', head: true }),
+        supabase.from('orders').select('*', { count: 'exact', head: true })
+    ]);
 
     return {
         productCount: productCount || 0,

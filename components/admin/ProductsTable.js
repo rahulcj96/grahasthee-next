@@ -148,10 +148,11 @@ export default function ProductsTable({ initialData, categories }) {
                         size="small"
                         onClick={() => showImages(record.images)}
                         title="View Images"
+                        aria-label="View Product Images"
                     />
                     <Tooltip title="Edit Product">
                         <Link href={`/admin/products/${record.id}`}>
-                            <Button icon={<EditOutlined />} size="small" />
+                            <Button icon={<EditOutlined />} size="small" aria-label="Edit Product" />
                         </Link>
                     </Tooltip>
                     <Popconfirm
@@ -162,7 +163,7 @@ export default function ProductsTable({ initialData, categories }) {
                         cancelText="No"
                     >
                         <Tooltip title="Delete Product">
-                            <Button icon={<DeleteOutlined />} danger size="small" type="text" />
+                            <Button icon={<DeleteOutlined />} danger size="small" type="text" aria-label="Delete Product" />
                         </Tooltip>
                     </Popconfirm>
                 </Space>

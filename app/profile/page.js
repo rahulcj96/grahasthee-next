@@ -77,7 +77,7 @@ export default function ProfilePage() {
     if (loading) return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center">
             <div className="spinner-border text-dark" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">Loading…</span>
             </div>
         </div>
     );
@@ -105,53 +105,63 @@ export default function ProfilePage() {
                                     <form onSubmit={handleUpdate}>
                                         <div className="row g-3 mb-4">
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label small text-uppercase fw-bold text-muted">Full Name</label>
+                                                <label htmlFor="full_name" className="form-label small text-uppercase fw-bold text-muted">Full Name</label>
                                                 <input
                                                     type="text"
+                                                    id="full_name"
                                                     className="form-control"
                                                     value={profile.full_name}
                                                     onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
                                                     placeholder="Enter your full name"
+                                                    autoComplete="name"
                                                 />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label small text-uppercase fw-bold text-muted">Phone Number</label>
+                                                <label htmlFor="phone" className="form-label small text-uppercase fw-bold text-muted">Phone Number</label>
                                                 <input
                                                     type="tel"
+                                                    id="phone"
                                                     className="form-control"
                                                     value={profile.phone}
                                                     onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                                                     placeholder="+91 99999 99999"
+                                                    autoComplete="tel"
                                                 />
                                             </div>
                                             <div className="col-12">
-                                                <label className="form-label small text-uppercase fw-bold text-muted">Street Address</label>
+                                                <label htmlFor="address" className="form-label small text-uppercase fw-bold text-muted">Street Address</label>
                                                 <textarea
+                                                    id="address"
                                                     className="form-control"
                                                     rows="3"
                                                     value={profile.address}
                                                     onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                                                     placeholder="Flat/House No., Colony, Area"
+                                                    autoComplete="street-address"
                                                 ></textarea>
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label small text-uppercase fw-bold text-muted">City</label>
+                                                <label htmlFor="city" className="form-label small text-uppercase fw-bold text-muted">City</label>
                                                 <input
                                                     type="text"
+                                                    id="city"
                                                     className="form-control"
                                                     value={profile.city}
                                                     onChange={(e) => setProfile({ ...profile, city: e.target.value })}
                                                     placeholder="Enter your city"
+                                                    autoComplete="address-level2"
                                                 />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label small text-uppercase fw-bold text-muted">Pincode</label>
+                                                <label htmlFor="pincode" className="form-label small text-uppercase fw-bold text-muted">Pincode</label>
                                                 <input
                                                     type="text"
+                                                    id="pincode"
                                                     className="form-control"
                                                     value={profile.pincode}
                                                     onChange={(e) => setProfile({ ...profile, pincode: e.target.value })}
                                                     placeholder="6-digit pincode"
+                                                    autoComplete="postal-code"
                                                 />
                                             </div>
                                         </div>
@@ -162,7 +172,7 @@ export default function ProfilePage() {
                                                 className="btn btn-dark py-3 text-uppercase fw-bold shadow-sm"
                                                 disabled={updating}
                                             >
-                                                {updating ? 'Saving Changes...' : 'Save Profile'}
+                                                {updating ? 'Saving Changes…' : 'Save Profile'}
                                             </button>
                                         </div>
                                     </form>
