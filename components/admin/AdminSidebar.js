@@ -9,6 +9,7 @@ import {
     FileImageOutlined,
     CloudUploadOutlined,
     LogoutOutlined,
+    FileTextOutlined,
 } from '@ant-design/icons'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -26,6 +27,7 @@ export default function AdminSidebar({ collapsed, isDarkMode }) {
             icon: <DashboardOutlined />,
             label: <Link href="/admin">Dashboard</Link>,
         },
+
         {
             key: '/admin/categories',
             icon: <AppstoreOutlined />,
@@ -45,6 +47,17 @@ export default function AdminSidebar({ collapsed, isDarkMode }) {
             key: '/admin/media',
             icon: <CloudUploadOutlined />,
             label: <Link href="/admin/media">Media Gallery</Link>,
+        },
+        {
+            key: 'sub-policies',
+            icon: <FileTextOutlined />,
+            label: 'Policies',
+            children: [
+                { key: '/admin/policies/privacy-policy', label: <Link href="/admin/policies/privacy-policy">Privacy Policy</Link> },
+                { key: '/admin/policies/terms-of-service', label: <Link href="/admin/policies/terms-of-service">Terms of Service</Link> },
+                { key: '/admin/policies/refund-policy', label: <Link href="/admin/policies/refund-policy">Refund & Return</Link> },
+                { key: '/admin/policies/shipping-policy', label: <Link href="/admin/policies/shipping-policy">Shipping Policy</Link> },
+            ]
         },
     ]
 

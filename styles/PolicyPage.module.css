@@ -1,0 +1,4 @@
+.policyContainer p {
+  word-break: normal !important;
+  overflow-wrap: anywhere; /* A more modern alternative to break-word */
+}
