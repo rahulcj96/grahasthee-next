@@ -193,7 +193,7 @@ export default function CategoryForm({ initialValues, title = 'Create Category' 
                     </Form.Item>
 
                     <Form.Item style={{ marginTop: 24 }}>
-                        <Button type="primary" htmlType="submit" icon={<SaveOutlined />} loading={loading} size="large" block>
+                        <Button type="primary" htmlType="submit" icon={<SaveOutlined />} loading={loading} disabled={uploading} size="large" block>
                             {initialValues ? 'Update Category' : 'Create Category'}
                         </Button>
                     </Form.Item>

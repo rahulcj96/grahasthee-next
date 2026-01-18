@@ -287,7 +287,7 @@ export default function ProductForm({ initialValues, title = 'Create Product', c
                     </Row>
 
                     <Form.Item style={{ marginTop: 24 }}>
-                        <Button type="primary" htmlType="submit" icon={<SaveOutlined />} loading={loading} size="large" block>
+                        <Button type="primary" htmlType="submit" icon={<SaveOutlined />} loading={loading} disabled={uploading} size="large" block>
                             {initialValues ? 'Update Product' : 'Create Product'}
                         </Button>
                     </Form.Item>

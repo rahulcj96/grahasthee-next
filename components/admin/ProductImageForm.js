@@ -206,7 +206,7 @@ export default function ProductImageForm({ categories = [], products = [] }) {
                             loading={loading}
                             size="large"
                             block
-                            disabled={fileList.length === 0}
+                            disabled={fileList.length === 0 || uploading}
                         >
                             Add {fileList.length > 0 ? `${fileList.length} ` : ''}Image{fileList.length !== 1 ? 's' : ''}
                         </Button>
