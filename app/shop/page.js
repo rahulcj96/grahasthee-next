@@ -8,7 +8,10 @@ import Pagination from "@/components/Pagination";
 import { supabase } from "@/lib/supabaseClient";
 import Reveal from "@/components/Reveal";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 const ITEMS_PER_PAGE = 12;
+
 
 async function getProducts(categorySlug, sortBy, inStock, page = 1) {
     let query = supabase

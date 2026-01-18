@@ -1,4 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
+
+export const revalidate = 60; // Revalidate every 60 seconds
+
 import Header from "@/components/Header";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
