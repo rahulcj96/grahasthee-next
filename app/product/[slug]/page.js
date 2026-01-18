@@ -11,6 +11,8 @@ import Link from 'next/link';
 import { SvgIcons } from '@/components/SvgIcons';
 import Reveal from '@/components/Reveal';
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 async function getProduct(slug) {
     const { data: product, error } = await supabase
         .from('products')
